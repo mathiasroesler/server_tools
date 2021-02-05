@@ -1,0 +1,62 @@
+#!/bin/bash
+
+function server_selection() {
+	case $1 in
+		1)
+			server=mathias@teaching.lsteffenel.fr:
+			if [[ $PORT == false ]]; then
+				port_number=6748
+			fi
+			;;
+		2)
+			server=jetsonnano@192.168.1.12:
+			;;
+		3)
+			server=jetsonnano@192.168.43.5:
+			;;
+		4)
+			server=mroesler@romeo-login1.univ-reims.fr:
+			;;
+		5)
+			server=mroesler@dgx1.univ-reims.fr:
+			options="-L 30001:localhost:5000 -L 30002:localhost:8888"
+			;;
+
+		?)
+			echo "download: invalid server choice."
+			echo "Try 'remote-connection -h' for help."
+			exit
+			;;
+	esac
+
+return 0
+}
+
+
+function print_info() {
+	printf "Server: "
+	echo $server
+	printf "Port: "
+	echo $port_number
+	printf "Source: "
+	echo $files
+	printf "Destination: "
+	echo $destination
+
+return 0
+}
+
+
+function available_servers() {
+	cpt=1
+
+	while read line
+	do
+		readarray -d " " -t word<<<${line}
+		echo "   $cpt: ${word[0]}"
+		cpt=$((cpt+1))
+	done < ~/.servers
+
+return 0
+}
+
