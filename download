@@ -1,0 +1,125 @@
+#!/bin/bash
+
+function print_usage() {
+	printf "Usage: download [-hr] [-P NUMBER] [-s NUMBER] file\n"
+	printf "Copy file from remote server to current working directory or multiple files from remote server to current working directory.\n"
+	printf "Options:\n"
+	printf " -h, print help.\n"
+	printf " -r, download a folder.\n"
+	printf " -P NUMBER, specify port number.\n"
+	printf " -s NUMBER, select the desired server.\n"
+	printf "    1: mathias@teaching.lsteffenel.fr (port number 6748)\n"
+	printf "    2: jetsonnano@192.168.1.12 \n"
+	printf "    3: jetsonnano@192.168.43.5 \n"
+	printf "    4: mroesler@romeo-login1.univ-reims.fr \n"
+	printf "    5: mroesler@dgx1.univ-reims.fr (localhost:30002)\n"
+
+return 0
+}
+
+
+function print_info() {
+	printf "Server: "
+	echo $server
+	printf "Port: "
+	echo $port_number
+	printf "Source: "
+	echo $files
+	printf "Destination: "
+	echo $destination
+
+return 0
+}
+
+
+function server_selection() {
+	case $1 in
+		1)
+			server=mathias@teaching.lsteffenel.fr:
+			if [[ $PORT == false ]]; then
+				port_number=6748
+			fi
+			;;
+		2)
+			server=jetsonnano@192.168.1.12:
+			;;
+		3)
+			server=jetsonnano@192.168.43.5:
+			;;
+		4)
+			server=mroesler@romeo-login1.univ-reims.fr:
+			;;
+		5)
+			server=mroesler@dgx1.univ-reims.fr:
+			options="-L 30001:localhost:5000 -L 30002:localhost:8888"
+			;;
+
+		?)
+			echo "download: invalid server choice."
+			echo "Try 'remote-connection -h' for help."
+			exit
+			;;
+	esac
+
+return 0
+}
+
+
+RECURSIVE=false
+PORT=false
+port_number=22
+server=NULL
+
+# Parse options
+while getopts ":rhP:s:" opt; do
+	case $opt in
+		r) 
+			RECURSIVE='true' 
+			;;
+		h) 
+			print_usage
+			exit 
+			;;
+		P)
+			port_number=${OPTARG}
+			PORT=true
+		       	;;
+		s)
+			server_selection ${OPTARG}
+			;;
+		?)
+			echo "download: invalid option."
+			echo "Try 'download -h' for help."
+			exit
+			;;
+	esac
+done
+
+if [[ $server == NULL ]]; then
+	echo "download: no server selected."
+	echo "Try 'download -h' for help."
+	exit
+fi
+
+if [[ $# -lt 1 ]]; then
+	echo "download: not enough arguments."
+	echo "Try 'download -h' for help."
+	exit
+fi
+
+# Shift to first argument after options
+shift $(($OPTIND - 1))
+
+ARGS="$@"
+destination=$PWD
+files=${ARGS}
+
+if [[ $RECURSIVE == 'true' ]]; then
+	print_info
+	scp -rP $port_number $options $server$files $destination
+
+else
+	print_info
+ 	scp -P $port_number $options $server$files $destination
+fi
+
