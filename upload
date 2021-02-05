@@ -8,14 +8,15 @@ function print_usage() {
 	# Arguments:
 	# Return:
 	#
-	printf "Usage: upload [-hr] [-p number] [-s number] file destination\n"
-	printf "Copy file to remote server destination or multiple files to remote server destination.\n"
+	printf "Usage: $NAME [-hr] [-p number] server file destination\n"
+	printf "Copy file to remote server destination or multiple files "
+	printf "to remote server destination. There are $NB_SERVERS available "
+	printf "servers: \n"
+	available_servers
 	printf "Options:\n"
 	printf " -h, print help.\n"
-	printf " -r, upload a folder.\n"
+	printf " -r, copies directories recursively.\n"
 	printf " -p number, specify port number.\n"
-	printf " -s number, select the desired server. \n"
-	available_servers
 
 return 0
 }
@@ -37,37 +38,30 @@ while getopts ":rhp:s:" opt; do
 			print_usage
 			exit 
 			;;
-		P)
+		p)
 			port_number="${OPTARG}"
 			PORT=true
 		       	;;
 
-		s)
-			set_connection_params ${OPTARG}
-			;;
 		?)
-			echo "upload: invalid option."
-			echo "Try 'upload -h' for help."
+			echo "$NAME: invalid option."
+			echo "Try '$NAME -h' for help."
 			exit
 			;;
 	esac
 done
 
-# Check for a server.
-if [[ $server == NULL ]]; then
-	echo "upload: no server selected."
-	echo "Try 'upload -h' for help."
-	exit
-fi
 
 # Shift to first argument after options.
 shift $(($OPTIND - 1))
 
-if [[ $# -lt 2 ]]; then
-	echo "upload: not enough arguments."
-	echo "Try 'upload -h' for help."
+if [[ $# -lt 3 ]]; then
+	echo "$NAME: not enough arguments."
+	echo "Try '$NAME -h' for help."
 	exit
 fi
+
+set_connection_params $1; shift
 
 ARGS="$@"
 destination=${@: -1}

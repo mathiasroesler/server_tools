@@ -8,24 +8,23 @@ function print_usage() {
 	# Arguments:
 	# Return:
 	#
-	printf "Usage: download [-hr] [-p number] [-s number] file\n"
-	printf "Copy file from remote server to current working directory or multiple files from remote server to current working directory.\n"
+	printf "Usage: $NAME [-hr] [-p number] server file\n"
+	printf "Copy file from remote server to current working directory or "
+	printf "multiple files from remote server to current working "
+	printf "directory. There are $NB_SERVERS available servers: \n"
+	available_servers
 	printf "Options:\n"
 	printf " -h, print help.\n"
-	printf " -r, download a folder.\n"
+	printf " -r, copy directories recursively.\n"
 	printf " -p number, specify port number.\n"
-	printf " -s number, select the desired server.\n"
-	available_servers
 
 return 0
 }
 
 
-
 RECURSIVE=false
 PORT=false
 port_number=22
-server=NULL
 
 # Parse options
 while getopts ":rhp:s:" opt; do
@@ -37,35 +36,28 @@ while getopts ":rhp:s:" opt; do
 			print_usage
 			exit 
 			;;
-		P)
+		p)
 			port_number=${OPTARG}
 			PORT=true
 		       	;;
-		s)
-			set_connection_params ${OPTARG}
-			;;
 		?)
-			echo "download: invalid option."
-			echo "Try 'download -h' for help."
+			echo "$NAME: invalid option."
+			echo "Try '$NAME -h' for help."
 			exit
 			;;
 	esac
 done
 
-if [[ $server == NULL ]]; then
-	echo "download: no server selected."
-	echo "Try 'download -h' for help."
-	exit
-fi
-
-if [[ $# -lt 1 ]]; then
-	echo "download: not enough arguments."
-	echo "Try 'download -h' for help."
+if [[ $# -lt 2 ]]; then
+	echo "$NAME: not enough arguments."
+	echo "Try '$NAME -h' for help."
 	exit
 fi
 
 # Shift to first argument after options
 shift $(($OPTIND - 1))
+
+set_connection_params $1; shift
 
 ARGS="$@"
 destination=$PWD

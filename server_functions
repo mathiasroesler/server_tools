@@ -13,12 +13,8 @@ function set_connection_params() {
 	# Returns:
 	#
 
-	if [[ $1 -gt $NB_SERVERS ]]; then
-		echo "$NAME: invalid server choice."
-		echo "Available servers:"
-		available_servers
-		exit
-	fi
+	int_check $1
+	server_check $1
 
 	server_params=$(sed "${1}q;d" $SERVER_FILE)
 	readarray -d " " -t params<<<${server_params} # Parse line.
@@ -82,3 +78,36 @@ function available_servers() {
 return 0
 }
 
+
+function int_check() {
+	# Checks if the argument is an integer.
+	#
+	# Arguments:
+	# $1 -- int
+	# Returns:
+	#
+	if [[ ! $1 =~ ^[0-9]+$ ]]; then
+		echo "$NAME: server argument must be an integer."
+		echo "Try '$NAME -h' for help."
+		exit 1
+	fi
+
+return 0
+}
+
+function server_check() {
+	# Checks if the provide server is a valid choice.
+	#
+	# Arguments:
+	# $1 -- int
+	# Returns:
+	#
+	if [[ $1 -gt $NB_SERVERS ]]; then
+		echo "$NAME: invalid server choice."
+		echo "Available servers:"
+		available_servers
+		exit
+	fi
+
+return 0
+}
