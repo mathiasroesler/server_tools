@@ -3,6 +3,11 @@
 source server_functions
 
 function print_usage() {
+	# Prints function usage.
+	#
+	# Arguments:
+	# Return:
+	#
 	printf "Usage: upload [-hr] [-p number] [-s number] file destination\n"
 	printf "Copy file to remote server destination or multiple files to remote server destination.\n"
 	printf "Options:\n"
@@ -38,7 +43,7 @@ while getopts ":rhp:s:" opt; do
 		       	;;
 
 		s)
-			server_selection ${OPTARG}
+			set_connection_params ${OPTARG}
 			;;
 		?)
 			echo "upload: invalid option."
@@ -62,7 +67,6 @@ if [[ $# -lt 2 ]]; then
 	echo "upload: not enough arguments."
 	echo "Try 'upload -h' for help."
 	exit
-
 fi
 
 ARGS="$@"
@@ -71,10 +75,10 @@ files=${ARGS%${destination}}
 
 if [[ $RECURSIVE == 'true' ]]; then
 	print_info
-	scp -rP $port_number $files $options $server$destination
+	scp -rP $port_number $files $options $server:$destination
 
 else
 	print_info
-	scp -P $port_number $files $options $server$destination
+	scp -P $port_number $files $options $server:$destination
 fi
 

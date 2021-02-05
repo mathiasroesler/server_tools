@@ -1,53 +1,75 @@
 #!/bin/bash
 
-function server_selection() {
-	case $1 in
-		1)
-			server=mathias@teaching.lsteffenel.fr:
-			if [[ $PORT == false ]]; then
-				port_number=6748
-			fi
-			;;
-		2)
-			server=jetsonnano@192.168.1.12:
-			;;
-		3)
-			server=jetsonnano@192.168.43.5:
-			;;
-		4)
-			server=mroesler@romeo-login1.univ-reims.fr:
-			;;
-		5)
-			server=mroesler@dgx1.univ-reims.fr:
-			options="-L 30001:localhost:5000 -L 30002:localhost:8888"
-			;;
+SERVER_FILE=$HOME/.servers
+NB_SERVERS=$(wc -l < $SERVER_FILE)
+NAME=`basename $0`
 
-		?)
-			echo "download: invalid server choice."
-			echo "Try 'remote-connection -h' for help."
-			exit
-			;;
-	esac
+function set_connection_params() {
+	# Set the connection server, port and options.
+	#
+	# If the number of the server is not available, an error is raised.
+	# Arguments: 
+	# $1 -- the number of the server.
+	# Returns:
+	#
+
+	if [[ $1 -gt $NB_SERVERS ]]; then
+		echo "$NAME: invalid server choice."
+		echo "Available servers:"
+		available_servers
+		exit
+	fi
+
+	server_params=$(sed "${1}q;d" $SERVER_FILE)
+	readarray -d " " -t params<<<${server_params} # Parse line.
+	server=${params[0]}
+	port_number=${params[1]}
+	options=${params[@]:2}
+
 
 return 0
 }
 
 
 function print_info() {
+	# Prints the connection information.
+	#
+	# Arguments:
+	# Returns:
+	#
 	printf "Server: "
 	echo $server
 	printf "Port: "
 	echo $port_number
-	printf "Source: "
-	echo $files
-	printf "Destination: "
-	echo $destination
+
+	# Print options if not empty.
+	if [[ -n $options ]]; then
+		printf "Options: "
+		echo $options
+	fi
+
+	# Print files if not empty.
+	if [[ -n $files ]]; then
+		printf "Source: "
+		echo $files
+	fi
+
+	# Print destination if not empty.
+	if [[ -n $destination ]];then
+		printf "Destination: "
+		echo $destination
+	fi
 
 return 0
 }
 
 
 function available_servers() {
+	# Prints the available servers in the server file.
+	#
+	# Arguments:
+	# Returns:
+	#
 	cpt=1
 
 	while read line
@@ -55,7 +77,7 @@ function available_servers() {
 		readarray -d " " -t word<<<${line}
 		echo "   $cpt: ${word[0]}"
 		cpt=$((cpt+1))
-	done < ~/.servers
+	done < $SERVER_FILE
 
 return 0
 }

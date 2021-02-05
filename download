@@ -3,6 +3,11 @@
 source server_functions
 
 function print_usage() {
+	# Prints function usage.
+	#
+	# Arguments:
+	# Return:
+	#
 	printf "Usage: download [-hr] [-p number] [-s number] file\n"
 	printf "Copy file from remote server to current working directory or multiple files from remote server to current working directory.\n"
 	printf "Options:\n"
@@ -37,7 +42,7 @@ while getopts ":rhp:s:" opt; do
 			PORT=true
 		       	;;
 		s)
-			server_selection ${OPTARG}
+			set_connection_params ${OPTARG}
 			;;
 		?)
 			echo "download: invalid option."
@@ -68,10 +73,10 @@ files=${ARGS}
 
 if [[ $RECURSIVE == 'true' ]]; then
 	print_info
-	scp -rP $port_number $options $server$files $destination
+	scp -rP $port_number $options $server:$files $destination
 
 else
 	print_info
- 	scp -P $port_number $options $server$files $destination
+ 	scp -P $port_number $options $server:$files $destination
 fi
 

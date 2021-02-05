@@ -3,9 +3,14 @@
 source server_functions
 
 function print_usage() {
+	# Prints function usage.
+	#
+	# Arguments:
+	# Return:
+	#
 	printf "Usage: remote-connection [-h] [-p number] server \n" 
-	printf "Connects to a remote server using ssh. The available servers"
-	printf " are:\n"
+	printf "Connects to a remote server using ssh. There are $nb_servers"
+	printf " available servers:\n"
 	available_servers
 	printf "Options:\n"
 	printf " -h, print help.\n"
@@ -47,7 +52,7 @@ if [[ $# -lt 1 ]]; then
 	exit
 fi
 
-server_selection $1
+set_connection_params $1
 
 print_info
 ssh -p $port_number $options $server 
