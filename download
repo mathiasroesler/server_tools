@@ -34,7 +34,7 @@ PORT=false
 OPTION=false
 
 # Parse options
-while getopts ":hlrp:o:" opt; do
+while getopts ":hlra:d:p:o:" opt; do
 	case $opt in
 		h) 
 			print_usage
@@ -46,6 +46,14 @@ while getopts ":hlrp:o:" opt; do
 			;;
 		r) 
 			RECURSIVE='true' 
+			;;
+		a)
+			server=${OPTARG}
+			ADD=true
+			;;
+		d)
+			server=${OPTARG}
+			DELETE=true
 			;;
 		p)
 			port_number=${OPTARG}
@@ -60,6 +68,16 @@ while getopts ":hlrp:o:" opt; do
 			;;
 	esac
 done
+
+if [[ $ADD == true ]]; then
+	add_server 
+	exit 0
+fi
+
+if [[ $DELETE == true ]]; then
+	delete_server $server
+	exit 0
+fi
 
 argument_nb_check $# 3
 

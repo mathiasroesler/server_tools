@@ -19,7 +19,7 @@ function print_usage() {
 	# Arguments:
 	# Return:
 	#
-	printf "Usage: $NAME [-hl] [-p port] [-o options] server \n" 
+	printf "Usage: $NAME [-hl] [-ad server] [-p port] [-o options] server \n" 
 	printf "Connects to a remote server using ssh.\n\n"
 	print_options
 
@@ -27,11 +27,13 @@ return 0
 }
 
 
+ADD=false
+DELETE=false
 PORT=false
 OPTION=false
 
 # Parse options
-while getopts ":hlp:o:" opt; do
+while getopts ":hla:d:p:o:" opt; do
 	case $opt in
 		h) 
 			print_usage
@@ -40,6 +42,14 @@ while getopts ":hlp:o:" opt; do
 		l)
 			available_servers
 			exit 0
+			;;
+		a)
+			server=${OPTARG}
+			ADD=true
+			;;
+		d)
+			server=${OPTARG}
+			DELETE=true
 			;;
 		p)
 			port_number=${OPTARG}
@@ -54,6 +64,16 @@ while getopts ":hlp:o:" opt; do
 			;;
 	esac
 done
+
+if [[ $ADD == true ]]; then
+	add_server 
+	exit 0
+fi
+
+if [[ $DELETE == true ]]; then
+	delete_server $server
+	exit 0
+fi
 
 # Shift to first argument after options.
 shift $(($OPTIND - 1))
