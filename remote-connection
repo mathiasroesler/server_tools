@@ -8,7 +8,10 @@
 #########################################################
 
 
+# Get necessary functions
 source server_functions
+define_const
+
 
 function print_usage() {
 	# Prints function usage.
@@ -17,12 +20,11 @@ function print_usage() {
 	# Return:
 	#
 	printf "Usage: $NAME [-h] [-p number] server \n" 
-	printf "Connects to a remote server using ssh. There are $NB_SERVERS"
-	printf " available servers:\n"
-	available_servers
+	printf "Connects to a remote server using ssh.\n\n"
 	printf "Options:\n"
 	printf " -h, print help.\n"
 	printf " -p number, specify port number.\n"
+	available_servers
 
 return 0
 }

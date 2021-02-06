@@ -7,9 +7,26 @@
 ### Contact: mathias.roesler@univ-reims.fr 		#
 #########################################################
 
-SERVER_FILE=$HOME/.servers
-NB_SERVERS=$(wc -l < $SERVER_FILE)
-NAME=`basename $0`
+
+function define_const() {
+	# Defines the constants values of the script.
+	# 
+	# Arguments:
+	# Returns:
+	#
+	NAME=`basename $0`
+
+	if [[ ! -f $HOME/.servers ]]; then
+		echo "Server file not found."
+		echo "Creating server file at $HOME."
+		touch $HOME/.servers
+	fi
+
+	SERVER_FILE=$HOME/.servers
+	NB_SERVERS=$(wc -l < $SERVER_FILE)
+
+return 0
+}
 
 function set_connection_params() {
 	# Set the connection server, port and options.
@@ -73,14 +90,22 @@ function available_servers() {
 	# Arguments:
 	# Returns:
 	#
+	echo ""
+	echo "There are currently $NB_SERVERS available servers:"
 	cpt=1
 
 	while read line
 	do
 		readarray -d " " -t word<<<${line}
-		echo "   $cpt: ${word[0]}"
+		echo " $cpt: ${word[0]}"
 		cpt=$((cpt+1))
-	done < $SERVER_FILE
+	done < "$SERVER_FILE"
+
+	echo ""
+
+	printf "The list of servers is stored in $SERVER_FILE in the following fashion: "
+	echo "username@hostname port options"
+	echo "You can add a server by editing the file directly."
 
 return 0
 }

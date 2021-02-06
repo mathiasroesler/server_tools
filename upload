@@ -9,6 +9,8 @@
 
 
 source server_functions
+define_const
+
 
 function print_usage() {
 	# Prints function usage.
@@ -18,13 +20,12 @@ function print_usage() {
 	#
 	printf "Usage: $NAME [-hr] [-p number] server file ... destination\n"
 	printf "Copy file to remote server destination or multiple files "
-	printf "to remote server destination. There are $NB_SERVERS available "
-	printf "servers: \n"
-	available_servers
+	printf "to remote server destination using scp.\n\n"
 	printf "Options:\n"
 	printf " -h, print help.\n"
 	printf " -r, copies directories recursively.\n"
 	printf " -p number, specify port number.\n"
+	available_servers
 
 return 0
 }
