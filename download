@@ -18,15 +18,11 @@ function print_usage() {
 	# Arguments:
 	# Return:
 	#
-	printf "Usage: $NAME [-hr] [-p number] server file ... destination\n"
+	printf "Usage: $NAME [-hlr] [-p number] server file ... destination\n"
 	printf "Copy file from remote server to destination or "
 	printf "multiple files from remote server to destination "
 	printf "directory using scp.\n\n"
-	printf "Options:\n"
-	printf " -h, print help.\n"
-	printf " -r, copy directories recursively.\n"
-	printf " -p number, specify port number.\n"
-	available_servers
+	print_options true
 
 return 0
 }
@@ -37,14 +33,18 @@ PORT=false
 port_number=22
 
 # Parse options
-while getopts ":rhp:s:" opt; do
+while getopts ":hlrp:s:" opt; do
 	case $opt in
-		r) 
-			RECURSIVE='true' 
-			;;
 		h) 
 			print_usage
-			exit 
+			exit 0
+			;;
+		l)
+			available_servers
+			exit 0
+			;;
+		r) 
+			RECURSIVE='true' 
 			;;
 		p)
 			port_number=${OPTARG}

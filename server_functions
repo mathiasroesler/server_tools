@@ -19,6 +19,7 @@ function define_const() {
 	if [[ ! -f $HOME/.servers ]]; then
 		echo "Server file not found."
 		echo "Creating server file at $HOME."
+		echo ""
 		touch $HOME/.servers
 	fi
 
@@ -46,6 +47,27 @@ function set_connection_params() {
 	port_number=${params[1]}
 	options=${params[@]:2}
 
+
+return 0
+}
+
+
+function print_options() {
+	# Prints the available options.
+	#
+	# Arguments:
+	# $1 -- recursive
+	# Returns:
+	#
+	echo "Options:"
+	echo " -h, print help."
+	echo " -l, lists the available servers."
+
+	if [[ $1 == true ]]; then
+		echo " -r, copy directories recursively."
+	fi
+
+	echo " -p number, specify port number."
 
 return 0
 }
