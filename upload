@@ -1,5 +1,13 @@
 #!/bin/bash
 
+#########################################################
+### Bash script to upload files to remote server. 	#
+### Last modified: 02/2021		      		#
+### Author: Mathias Roesler		      		#
+### Contact: mathias.roesler@univ-reims.fr    		#
+#########################################################
+
+
 source server_functions
 
 function print_usage() {

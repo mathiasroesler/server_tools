@@ -1,5 +1,12 @@
 #!/bin/bash
 
+#########################################################
+### Helper functions.                      		#
+### Last modified: 02/2021		   		#
+### Author: Mathias Roesler		   		#
+### Contact: mathias.roesler@univ-reims.fr 		#
+#########################################################
+
 SERVER_FILE=$HOME/.servers
 NB_SERVERS=$(wc -l < $SERVER_FILE)
 NAME=`basename $0`
