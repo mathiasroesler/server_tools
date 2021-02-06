@@ -25,6 +25,7 @@ function define_const() {
 
 	SERVER_FILE=$HOME/.servers
 	NB_SERVERS=$(wc -l < $SERVER_FILE)
+	SERVER=true
 
 return 0
 }
@@ -34,23 +35,33 @@ function set_connection_params() {
 	#
 	# If the number of the server is not available, an error is raised.
 	# Arguments: 
-	# $1 -- the number of the server.
+	# $1 -- server name or number.
 	# Returns:
 	#
 
-	int_check $1
 	server_check $1
 
-	server_params=$(sed "${1}q;d" $SERVER_FILE)
-	readarray -d " " -t params<<<${server_params} # Parse line.
-	server=${params[0]}
+	# Read the params from file if not specified by user.
+	if [[ $SERVER == false ]]; then
+		server_params=$(sed "${1}q;d" $SERVER_FILE)
+		readarray -d " " -t params<<<${server_params} # Parse line.
 
-	if [[ $PORT == false ]]; then
-		port_number=${params[1]}
-	fi
+		server=${params[0]}
 
-	if [[ $OPTION == false ]]; then
-		options=${params[@]:2}
+		if [[ $PORT == false ]]; then
+			port_number=${params[1]}
+		fi
+
+		if [[ $OPTION == false ]]; then
+			options=${params[@]:2}
+		fi
+
+	else
+		server=$1
+
+		if [[ $PORT == false ]]; then
+			port_number=22
+		fi
 	fi
 
 return 0
@@ -157,21 +168,6 @@ return 0
 }
 
 
-function int_check() {
-	# Checks if the argument is an integer.
-	#
-	# Arguments:
-	# $1 -- val
-	# Returns:
-	#
-	if [[ ! $1 =~ ^[0-9]+$ ]]; then
-		error_handler "server argument must be an integer."
-	fi
-
-return 0
-}
-
-
 function server_check() {
 	# Checks if the provide server is a valid choice.
 	#
@@ -179,8 +175,14 @@ function server_check() {
 	# $1 -- val
 	# Returns:
 	#
-	if [[ $1 -gt $NB_SERVERS ]]; then
-		error_handler "invalid server choice."
+	if [[ $1 =~ ^[0-9]+$ ]]; then
+		SERVER=false
+	fi
+
+	if [[ $SERVER == false ]]; then
+		if [[ $1 -gt $NB_SERVERS ]]; then
+			error_handler "invalid server choice."
+		fi
 	fi
 
 return 0
