@@ -36,9 +36,7 @@ while getopts ":hp:" opt; do
 		       	;;
 
 		?)
-			echo "$NAME: invalid option."
-			echo "Try '$NAME -h' for help."
-			exit
+			error_handler "invalid option."
 			;;
 	esac
 done
@@ -46,12 +44,7 @@ done
 # Shift to first argument after options.
 shift $(($OPTIND - 1))
 
-if [[ $# -lt 1 ]]; then
-	echo "$NAME: not enough arguments."
-	echo "Try '$NAME -h' for help."
-	exit
-fi
-
+argument_nb_check $# 1
 
 set_connection_params $1
 

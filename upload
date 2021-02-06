@@ -8,7 +8,7 @@ function print_usage() {
 	# Arguments:
 	# Return:
 	#
-	printf "Usage: $NAME [-hr] [-p number] server file destination\n"
+	printf "Usage: $NAME [-hr] [-p number] server file ... destination\n"
 	printf "Copy file to remote server destination or multiple files "
 	printf "to remote server destination. There are $NB_SERVERS available "
 	printf "servers: \n"
@@ -44,9 +44,7 @@ while getopts ":rhp:s:" opt; do
 		       	;;
 
 		?)
-			echo "$NAME: invalid option."
-			echo "Try '$NAME -h' for help."
-			exit
+			error_handler "invalid option."
 			;;
 	esac
 done
@@ -55,11 +53,7 @@ done
 # Shift to first argument after options.
 shift $(($OPTIND - 1))
 
-if [[ $# -lt 3 ]]; then
-	echo "$NAME: not enough arguments."
-	echo "Try '$NAME -h' for help."
-	exit
-fi
+argument_nb_check $# 3
 
 set_connection_params $1; shift
 

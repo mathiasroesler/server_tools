@@ -78,35 +78,70 @@ function available_servers() {
 return 0
 }
 
+########################################
+####### ERROR HANDLING FUNCTIONS #######
+########################################
+
+function error_handler() {
+	# Handles errors.
+	#
+	# Arguments:
+	# $1 -- error message.
+	# Returns:
+	#
+	echo "$NAME: $1"
+	echo "Try '$NAME -h' for help."
+	exit 1
+
+return 0
+}
+
 
 function int_check() {
 	# Checks if the argument is an integer.
 	#
 	# Arguments:
-	# $1 -- int
+	# $1 -- val
 	# Returns:
 	#
 	if [[ ! $1 =~ ^[0-9]+$ ]]; then
-		echo "$NAME: server argument must be an integer."
-		echo "Try '$NAME -h' for help."
-		exit 1
+		error_handler "server argument must be an integer."
 	fi
 
 return 0
 }
 
+
 function server_check() {
 	# Checks if the provide server is a valid choice.
 	#
 	# Arguments:
-	# $1 -- int
+	# $1 -- val
 	# Returns:
 	#
 	if [[ $1 -gt $NB_SERVERS ]]; then
-		echo "$NAME: invalid server choice."
-		echo "Available servers:"
-		available_servers
-		exit
+		error_handler "invalid server choice."
+	fi
+
+return 0
+}
+
+
+function argument_nb_check() {
+	# Checks if the right number of arguments was provided.
+	#
+	# Arguments:
+	# $1 -- arg_nb
+	# $2 -- desired_nb
+        # Returns:
+	#
+	if [[ $1 -lt $2 ]]; then
+		error_handler "not enough arguments."
+	
+	elif [[ $1 -gt $2 ]]; then
+		if [[ $NAME == "remote-connection" ]]; then
+			error_handler "too many arguments."
+		fi
 	fi
 
 return 0
