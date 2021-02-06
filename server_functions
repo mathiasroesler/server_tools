@@ -44,7 +44,10 @@ function set_connection_params() {
 	server_params=$(sed "${1}q;d" $SERVER_FILE)
 	readarray -d " " -t params<<<${server_params} # Parse line.
 	server=${params[0]}
-	port_number=${params[1]}
+
+	if [[ $PORT == false ]]; then
+		port_number=${params[1]}
+	fi
 	options=${params[@]:2}
 
 
