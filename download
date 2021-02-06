@@ -8,9 +8,9 @@ function print_usage() {
 	# Arguments:
 	# Return:
 	#
-	printf "Usage: $NAME [-hr] [-p number] server file\n"
-	printf "Copy file from remote server to current working directory or "
-	printf "multiple files from remote server to current working "
+	printf "Usage: $NAME [-hr] [-p number] server file destination\n"
+	printf "Copy file from remote server to destination or "
+	printf "multiple files from remote server to destination "
 	printf "directory. There are $NB_SERVERS available servers: \n"
 	available_servers
 	printf "Options:\n"
@@ -48,7 +48,7 @@ while getopts ":rhp:s:" opt; do
 	esac
 done
 
-if [[ $# -lt 2 ]]; then
+if [[ $# -lt 3 ]]; then
 	echo "$NAME: not enough arguments."
 	echo "Try '$NAME -h' for help."
 	exit
@@ -60,8 +60,8 @@ shift $(($OPTIND - 1))
 set_connection_params $1; shift
 
 ARGS="$@"
-destination=$PWD
-files=${ARGS}
+destination=${@: -1}
+files=${ARGS%${destination}}
 
 if [[ $RECURSIVE == 'true' ]]; then
 	print_info
