@@ -18,7 +18,8 @@ function print_usage() {
 	# Arguments:
 	# Return:
 	#
-	printf "Usage: $NAME [-hlr] [-p number] server file ... destination\n"
+	printf "Usage: $NAME [-hlr] [-p port] [-o options] server file ... "
+	printf "destination\n"
 	printf "Copy file to remote server destination or multiple files "
 	printf "to remote server destination using scp.\n\n"
 	print_options true
@@ -29,10 +30,10 @@ return 0
 
 RECURSIVE=false
 PORT=false
-port_number=22
+OPTION=false
 
 # Parse options
-while getopts ":hlrp:" opt; do
+while getopts ":hlrp:o:" opt; do
 	case $opt in
 		h) 
 			print_usage
@@ -46,10 +47,13 @@ while getopts ":hlrp:" opt; do
 			RECURSIVE='true' 
 			;;
 		p)
-			port_number="${OPTARG}"
+			port_number=${OPTARG}
 			PORT=true
 		       	;;
-
+		o)
+			options=${OPTARG}
+			OPTION=true
+			;;
 		?)
 			error_handler "invalid option."
 			;;

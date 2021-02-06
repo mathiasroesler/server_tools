@@ -19,7 +19,7 @@ function print_usage() {
 	# Arguments:
 	# Return:
 	#
-	printf "Usage: $NAME [-hl] [-p number] server \n" 
+	printf "Usage: $NAME [-hl] [-p port] [-o options] server \n" 
 	printf "Connects to a remote server using ssh.\n\n"
 	print_options
 
@@ -28,10 +28,10 @@ return 0
 
 
 PORT=false
-port_number=22
+OPTION=false
 
 # Parse options
-while getopts ":hlp:" opt; do
+while getopts ":hlp:o:" opt; do
 	case $opt in
 		h) 
 			print_usage
@@ -42,10 +42,13 @@ while getopts ":hlp:" opt; do
 			exit 0
 			;;
 		p)
-			port_number="${OPTARG}"
+			port_number=${OPTARG}
 			PORT=true
 		       	;;
-
+		o)
+			options=${OPTARG}
+			OPTION=true
+			;;
 		?)
 			error_handler "invalid option."
 			;;

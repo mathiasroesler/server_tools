@@ -48,8 +48,10 @@ function set_connection_params() {
 	if [[ $PORT == false ]]; then
 		port_number=${params[1]}
 	fi
-	options=${params[@]:2}
 
+	if [[ $OPTION == false ]]; then
+		options=${params[@]:2}
+	fi
 
 return 0
 }
@@ -70,7 +72,8 @@ function print_options() {
 		echo " -r, copy directories recursively."
 	fi
 
-	echo " -p number, specify port number."
+	echo " -p port, specify port number."
+	echo " -o options, specify (in quotations) the options."
 
 return 0
 }
