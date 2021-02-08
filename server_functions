@@ -221,6 +221,48 @@ return 0
 }
 
 
+function modify_server() {
+	# Modifies selected server from server list.
+	#
+	# Arguments:
+	# Returns: 
+	#	
+	server_check $server
+
+	if [[ $SERVER == true ]]; then
+		error_handler "invalid server choice."
+	fi
+
+	if [[ $PORT == "false" && $OPTION == "false" ]]; then
+		error_handler "specify port or option to modify."
+	fi
+
+	line_nb=$server
+
+	server_params=$(sed "${line_nb}q;d" $SERVER_FILE)
+	readarray -d " " -t params<<<${server_params} # Parse line.
+	server=${params[0]}
+
+	if [[ $PORT == false ]]; then
+		port_number=${params[1]}
+	fi
+
+	if [[ $OPTION == false ]]; then
+		options=${params[@]:2}
+	fi
+
+	echo "Selected server: $server_params"
+	set_mod_params
+	echo "New server: $server_params"
+
+	sed -i "${line_nb}s/.*/$server_params/" $SERVER_FILE
+
+	print_available_servers "long"
+
+return 0
+}
+
+
 ########################################
 ########## PRINTING FUNCTIONS ##########
 ########################################
@@ -242,8 +284,9 @@ function print_options() {
 		echo " -r, copy directories recursively."
 	fi
 
-	echo " -a server, add specified server to the list of available servers."
+	echo " -a server, add specified server to the list of available servers -- server full name."
 	echo " -d server, delete specified server from the list of available servers -- line number of the server or full name."
+	echo " -m server, modifies specified server from the list of available servers -- line number of the server, and port or option must be specified."
 	echo " -p port, specify port number -- default value 22."
 	echo " -o options, specify (in quotations) the options."
 
@@ -321,6 +364,7 @@ function print_available_servers() {
 
 return 0
 }
+
 
 ########################################
 ####### ERROR HANDLING FUNCTIONS #######
