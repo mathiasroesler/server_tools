@@ -105,7 +105,6 @@ files=${ARGS%${destination}}
 
 if [[ $RECURSIVE == 'true' ]]; then
 	print_info
-	echo $options
 	scp -rP $port_number $options $server:$files $destination
 
 else
