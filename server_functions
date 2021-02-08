@@ -86,7 +86,7 @@ function write_server_params() {
 	echo "Writting to server file."
 	echo "$1" >> $SERVER_FILE
 	echo "Done."
-	available_servers
+	available_servers "long"
 
 return 0
 }
@@ -167,7 +167,7 @@ function erase_server_params() {
 		done < "$SERVER_FILE"
 	fi
 
-	available_servers
+	available_servers "long"
 
 return 0
 }
@@ -221,6 +221,7 @@ function print_options() {
 	echo "Options:"
 	echo " -h, print help."
 	echo " -l, lists the available servers."
+	echo " -L, lists the available servers in long format."
 
 	if [[ $1 == true ]]; then
 		echo " -r, copy directories recursively."
@@ -286,8 +287,14 @@ function available_servers() {
 
 	while read line
 	do
-		readarray -d " " -t word<<<${line}
-		echo " $cpt: ${word[0]}"
+		if [[ $1 == long ]]; then
+			echo " $cpt: $line"
+
+		else
+			readarray -d " " -t word<<<${line}
+			echo " $cpt: ${word[0]}"
+		fi
+
 		cpt=$((cpt+1))
 	done < "$SERVER_FILE"
 
