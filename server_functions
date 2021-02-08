@@ -36,6 +36,40 @@ return 0
 }
 
 
+
+function get_user_input() {
+	# Gets user input to a yes or no question.
+	#
+	# Arguments:
+	# $1 -- question to be answered.
+	# Returns:
+	#
+	echo "$1 (y/n)"
+	valid=false
+
+	while [ $valid == false ]
+	do
+		read answer
+
+		case $answer in
+			y)
+				valid=true
+				;;
+			n)
+				valid=true
+				;;
+			?)
+				if [[ -z $answer ]]; then
+					valid=true
+				else
+					echo "Invalid response. Please select y or n."
+				fi
+		esac
+	done
+return 0
+}
+
+
 function set_connection_params() {
 	# Set the connection server, port and options.
 	#
@@ -67,6 +101,19 @@ function set_connection_params() {
 
 		if [[ $PORT == false ]]; then
 			port_number=22
+		fi
+
+		server_params="$server $port_number $options"
+
+		is_present=$(cat $SERVER_FILE | grep -E "^$server_params$")
+
+		if [[ -z $is_present ]]; then
+			echo "$server_params is a new server."
+			get_user_input "Do you want to add it to the server list?"
+
+			if [[ $answer == y || -z $answer ]]; then
+				write_server_params "$server_params"
+			fi
 		fi
 	fi
 
@@ -165,28 +212,19 @@ function delete_server() {
 	else
 		echo "Server with specified parameters is present in the list."
 
-		while :
-		do
-			echo "Do you want to delete it? (y/n)"
-			read answer
+		get_user_input "Do you want to delete it?"
 
-			case $answer in
-				y)
-					erase_server_params "$server_params"
-					exit 0
-					;;
-				n)
-					exit 0
-					;;
-				?)
-					if [[ -z $answer ]]; then
-						erase_server_params "$server_params"
-						exit 0
-					else
-						echo "Invalid response."
-					fi
-			esac
-		done
+		if [[ $answer == y ]]; then
+			erase_server_params "$server_params"
+			exit 0
+
+		elif [[ $answer == n ]]; then
+			exit 0
+
+		elif [[ -z $answer ]]; then
+			erase_server_params "$server_params"
+			exit 0
+		fi
 	fi
 
 return 0
@@ -359,7 +397,7 @@ function print_available_servers() {
 	if [[ $1 == "help" || $2 == "help" ]]; then
 		echo ""
 
-		printf "The list of servers is stored in $SERVER_FILE in the following fashion: "
+		printf "The list of servers is stored in $SERVER_FILE with one server per line in the following fashion: "
 		echo "username@hostname port options"
 		echo "You can add a server by editing the file directly."
 	fi
