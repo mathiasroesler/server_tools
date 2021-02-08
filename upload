@@ -18,7 +18,7 @@ function print_usage() {
 	# Arguments:
 	# Return:
 	#
-	printf "Usage: $NAME [-hlLr] [-p port] [-o options] server file ... "
+	printf "Usage: $NAME [-hlLr] [-ad server] [-p port] [-o options] server file ... "
 	printf "destination\n"
 	printf "Copy file to remote server destination or multiple files "
 	printf "to remote server destination using scp.\n\n"
@@ -40,11 +40,11 @@ while getopts ":hlLra:d:p:o:" opt; do
 			exit 0
 			;;
 		l)
-			available_servers
+			print_available_servers
 			exit 0
 			;;
 		L)
-			available_servers "long"
+			print_available_servers "long"
 			exit 0
 			;;
 		r) 

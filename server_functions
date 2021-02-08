@@ -8,6 +8,11 @@
 #########################################################
 
 
+#######################################
+########### SETUP FUNCTIONS ###########
+#######################################
+
+
 function define_const() {
 	# Defines the constants values of the script.
 	# 
@@ -31,6 +36,48 @@ return 0
 }
 
 
+function set_connection_params() {
+	# Set the connection server, port and options.
+	#
+	# If the number of the server is not available, an error is raised.
+	# Arguments: 
+	# $1 -- server name or number.
+	# Returns:
+	#
+
+	server_check $1
+
+	# Read the params from file if not specified by user.
+	if [[ $SERVER == false ]]; then
+		server_params=$(sed "${1}q;d" $SERVER_FILE)
+		readarray -d " " -t params<<<${server_params} # Parse line.
+
+		server=${params[0]}
+
+		if [[ $PORT == false ]]; then
+			port_number=${params[1]}
+		fi
+
+		if [[ $OPTION == false ]]; then
+			options=${params[@]:2}
+		fi
+
+	else
+		server=$1
+
+		if [[ $PORT == false ]]; then
+			port_number=22
+		fi
+	fi
+
+return 0
+}
+
+
+#########################################
+##### SERVER FILE EDITING FUNCTIONS #####
+#########################################
+
 function set_mod_params() {
 	# Set the parameters for modifying the server list.
 	#
@@ -52,7 +99,7 @@ return 0
 }
 
 function add_server() {
-	# Adds a server to the server file.
+	# Adds a server to the server list.
 	#
 	# Arguments:
 	# Returns:
@@ -62,9 +109,10 @@ function add_server() {
 	set_mod_params
 
 	is_present=$(cat $SERVER_FILE | grep -E "^$server_params$")
+	echo "Selected server: $server_params"
 
 	if [[ -n $is_present ]]; then
-		echo "Server $server with specified parameters is already present in the list."
+		echo "Server with specified parameters is already present in the list."
 		exit 0
 
 	else
@@ -77,16 +125,16 @@ return 0
 
 
 function write_server_params() {
-	# Write the server parameters to the server list.
+	# Edits the server list.
 	# Arguments:
 	# $1 -- server_params
 	# Returns:
 	#
-	echo "Selected server: $1"
 	echo "Writting to server file."
 	echo "$1" >> $SERVER_FILE
 	echo "Done."
-	available_servers "long"
+	NB_SERVERS=$((NB_SERVERS+1))
+	print_available_servers "long"
 
 return 0
 }
@@ -146,7 +194,7 @@ return 0
 
 
 function erase_server_params() {
-	# Remove a server from the server list.
+	# Edits the server list.
 	#
 	# Arguments:
 	# $1 -- server_params
@@ -167,48 +215,15 @@ function erase_server_params() {
 		done < "$SERVER_FILE"
 	fi
 
-	available_servers "long"
+	print_available_servers "long"
 
 return 0
 }
 
 
-function set_connection_params() {
-	# Set the connection server, port and options.
-	#
-	# If the number of the server is not available, an error is raised.
-	# Arguments: 
-	# $1 -- server name or number.
-	# Returns:
-	#
-
-	server_check $1
-
-	# Read the params from file if not specified by user.
-	if [[ $SERVER == false ]]; then
-		server_params=$(sed "${1}q;d" $SERVER_FILE)
-		readarray -d " " -t params<<<${server_params} # Parse line.
-
-		server=${params[0]}
-
-		if [[ $PORT == false ]]; then
-			port_number=${params[1]}
-		fi
-
-		if [[ $OPTION == false ]]; then
-			options=${params[@]:2}
-		fi
-
-	else
-		server=$1
-
-		if [[ $PORT == false ]]; then
-			port_number=22
-		fi
-	fi
-
-return 0
-}
+########################################
+########## PRINTING FUNCTIONS ##########
+########################################
 
 
 function print_options() {
@@ -228,8 +243,8 @@ function print_options() {
 	fi
 
 	echo " -a server, add specified server to the list of available servers."
-	echo " -d server, delete specified server from the list of available servers."
-	echo " -p port, specify port number."
+	echo " -d server, delete specified server from the list of available servers -- line number of the server or full name."
+	echo " -p port, specify port number -- default value 22."
 	echo " -o options, specify (in quotations) the options."
 
 return 0
@@ -269,7 +284,7 @@ return 0
 }
 
 
-function available_servers() {
+function print_available_servers() {
 	# Prints the available servers in the server file.
 	#
 	# Arguments:
