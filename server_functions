@@ -109,7 +109,7 @@ function add_server() {
 	set_mod_params
 
 	is_present=$(cat $SERVER_FILE | grep -E "^$server_params$")
-	echo "Selected server: $server_params"
+	echo "New server: $server_params"
 
 	if [[ -n $is_present ]]; then
 		echo "Server with specified parameters is already present in the list."
@@ -284,11 +284,11 @@ function print_options() {
 		echo " -r, copy directories recursively."
 	fi
 
-	echo " -a server, add specified server to the list of available servers -- server full name."
-	echo " -d server, delete specified server from the list of available servers -- line number of the server or full name."
-	echo " -m server, modifies specified server from the list of available servers -- line number of the server, and port or option must be specified."
-	echo " -p port, specify port number -- default value 22."
-	echo " -o options, specify (in quotations) the options."
+	printf "\n -a server, add specified server to the list of available servers -- server full name.\n\n"
+	printf " -d server, delete specified server from the list of available servers -- line number of the server or full name.\n\n"
+	printf " -m server, modifies specified server from the list of available servers -- line number of the server, and port or option must be specified.\n\n"
+	printf " -p port, specify port number -- default value 22.\n\n"
+	echo " -o options, specify the options -- quotations are required."
 
 return 0
 }
@@ -356,11 +356,13 @@ function print_available_servers() {
 		cpt=$((cpt+1))
 	done < "$SERVER_FILE"
 
-	echo ""
+	if [[ $1 == "help" || $2 == "help" ]]; then
+		echo ""
 
-	printf "The list of servers is stored in $SERVER_FILE in the following fashion: "
-	echo "username@hostname port options"
-	echo "You can add a server by editing the file directly."
+		printf "The list of servers is stored in $SERVER_FILE in the following fashion: "
+		echo "username@hostname port options"
+		echo "You can add a server by editing the file directly."
+	fi
 
 return 0
 }

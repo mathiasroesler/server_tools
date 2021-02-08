@@ -40,11 +40,11 @@ while getopts ":hlLra:d:m:p:o:" opt; do
 			exit 0
 			;;
 		l)
-			print_available_servers
+			print_available_servers "help"
 			exit 0
 			;;
 		L)
-			print_available_servers "long"
+			print_available_servers "long" "help"
 			exit 0
 			;;
 		r) 
