@@ -31,6 +31,7 @@ function define_const() {
 	SERVER_FILE=$HOME/.servers
 	NB_SERVERS=$(wc -l < $SERVER_FILE)
 	SERVER=true
+	ARGUMENTS=:hlLra:d:m:p:o:
 
 return 0
 }
@@ -66,6 +67,58 @@ function get_user_input() {
 				fi
 		esac
 	done
+return 0
+}
+
+
+function parse_args() {
+	# Parses the arguments.
+	#
+	# Arguments:
+	# $1 -- argument
+	# Returns:
+	#
+	case $1 in
+		h) 
+			print_usage
+			exit 0
+			;;
+		l)
+			print_available_servers "help"
+			exit 0
+			;;
+		L)
+			print_available_servers "long" "help"
+			exit 0
+			;;
+		r) 
+			RECURSIVE='true' 
+			;;
+		a)
+			server=${OPTARG}
+			ADD=true
+			;;
+		d)
+			server=${OPTARG}
+			DELETE=true
+			;;
+		m)
+			server=${OPTARG}
+			MODIFY=true
+			;;
+		p)
+			port_number=${OPTARG}
+			PORT=true
+		       	;;
+		o)
+			options=${OPTARG}
+			OPTION=true
+			;;
+		?)
+			error_handler "invalid option."
+			;;
+	esac
+
 return 0
 }
 

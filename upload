@@ -33,47 +33,8 @@ PORT=false
 OPTION=false
 
 # Parse options
-while getopts ":hlLra:d:m:p:o:" opt; do
-	case $opt in
-		h) 
-			print_usage
-			exit 0
-			;;
-		l)
-			print_available_servers "help"
-			exit 0
-			;;
-		L)
-			print_available_servers "long" "help"
-			exit 0
-			;;
-		r) 
-			RECURSIVE='true' 
-			;;
-		a)
-			server=${OPTARG}
-			ADD=true
-			;;
-		d)
-			server=${OPTARG}
-			DELETE=true
-			;;
-		m)
-			server=${OPTARG}
-			MODIFY=true
-			;;
-		p)
-			port_number=${OPTARG}
-			PORT=true
-		       	;;
-		o)
-			options=${OPTARG}
-			OPTION=true
-			;;
-		?)
-			error_handler "invalid option."
-			;;
-	esac
+while getopts $ARGUMENTS opt; do
+	parse_args $opt
 done
 
 if [[ $ADD == true ]]; then
