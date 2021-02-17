@@ -27,16 +27,14 @@ return 0
 }
 
 
-ADD=false
-DELETE=false
-MODIFY=false
-PORT=false
-OPTION=false
-
 # Parse options
 while getopts $ARGUMENTS opt; do
 	parse_args $opt 
 done
+
+if [[ $RECURSIVE == true ]]; then
+	error_handler "invalid option."
+fi
 
 if [[ $ADD == true ]]; then
 	add_server 

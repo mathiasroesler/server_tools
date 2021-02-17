@@ -30,8 +30,14 @@ function define_const() {
 
 	SERVER_FILE=$HOME/.servers
 	NB_SERVERS=$(wc -l < $SERVER_FILE)
-	SERVER=true
 	ARGUMENTS=:hlLra:d:m:p:o:
+	SERVER=true
+	ADD=false
+	DELETE=false
+	MODIFY=false
+	RECURSIVE=false
+	PORT=false
+	OPTION=false
 
 return 0
 }
@@ -97,14 +103,17 @@ function parse_args() {
 		a)
 			server=${OPTARG}
 			ADD=true
+			argument_check $DELETE $MODIFY
 			;;
 		d)
 			server=${OPTARG}
 			DELETE=true
+			argument_check $ADD $MODIFY
 			;;
 		m)
 			server=${OPTARG}
 			MODIFY=true
+			argument_check $ADD $DELETE
 			;;
 		p)
 			port_number=${OPTARG}
@@ -517,6 +526,22 @@ function argument_nb_check() {
 		if [[ $NAME == "remote-connection" ]]; then
 			error_handler "too many arguments."
 		fi
+	fi
+
+return 0
+}
+
+
+function argument_check() {
+	# Checks if the arguments are correct.
+	#
+	# Arguments:
+	# $1 -- first argument
+	# $2 -- second argument
+	# Returns
+	#
+	if [[ $1 == true || $2 == true ]]; then
+		error_handler "incompatible arguments."
 	fi
 
 return 0
