@@ -51,13 +51,21 @@ fi
 # Shift to first argument after options.
 shift $(($OPTIND - 1))
 
-argument_nb_check $# 3
+argument_nb_check $# 2
 
 set_connection_params $1; shift
 
 ARGS="$@"
-destination=${@: -1}
-files=${ARGS%${destination}}
+
+if [[ $# -gt 1 ]]; then
+	destination=${@: -1}
+	files=${ARGS%${destination}}
+
+else
+	# If only the source was given.
+	destination=""
+	files=$ARGS
+fi
 
 if [[ $RECURSIVE == 'true' ]]; then
 	print_info
