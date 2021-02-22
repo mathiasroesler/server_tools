@@ -21,7 +21,9 @@ To install enter the following commands:
     $ git clone  https://github.com/mathiasroesler/server_tools.git
     $ cd server_tools
     $ chmod +x install.sh
-    $ sudo ./install.sh
+    $ ./install.sh
+
+Note: your password will be required to copy the files.
     
 ## Usage
 

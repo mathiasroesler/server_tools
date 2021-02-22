@@ -43,6 +43,7 @@ function override() {
 		case $answer in
 			y)
 				SCRIPTS="$SCRIPTS $1"
+				sudo rm -f $1
 				valid=true
 				;;
 			n)
@@ -74,8 +75,7 @@ if [[ ! -d $DESTINATION ]]; then
 	exit 1
 fi
 
-echo "Folder $DESTINATION exists."
-echo ""
+echo "Folder $DESTINATION exists."; echo
 
 cd $DESTINATION
 
@@ -86,26 +86,36 @@ check_existence "server_functions"
 
 cd $CUR_DIR
 
-if [[ -z $SCRIPTS ]]; then
-	echo "Nothing to do."
-	echo "Exiting."
-	exit 0
-fi
+if [[ -n $SCRIPTS ]]; then
+	sudo cp $SCRIPTS $DESTINATION
+	echo "Copying$SCRIPTS to $DESTINATION"; echo
 
-echo "Copying$SCRIPTS to $DESTINATION"
-cp $SCRIPTS $DESTINATION
+else
+	echo "Nothing to copy."; echo
+	copy=false
+fi
 
 SCRIPTS=""
 cd $HOME
 
 check_existence ".servers"
-touch "$HOME/.servers"
 
-cd -
-echo "Moving out of $CUR_DIR"
+if [[ -z $SCRIPTS && $copy == false ]]; then
+	echo "Nothing to replace."; echo
+	echo "Nothing done."
+	echo "Exiting."
+	exit 0
+
+elif [[ -z $SCRIPTS ]]; then
+	echo "Nothing to replace."; echo
+
+else
+	echo "Creating$SCRIPTS file."; echo
+	touch "$HOME/.servers"
+fi
+
+cd $CUR_DIR
 cd ../ 
-printf "Now in "
-pwd
 echo "Removing $CUR_DIR"
 rm -rf $CUR_DIR
 echo "Done."
