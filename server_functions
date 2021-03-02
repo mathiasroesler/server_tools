@@ -65,7 +65,7 @@ function get_user_input() {
 			n)
 				valid=true
 				;;
-			?)
+			*)
 				if [[ -z $answer ]]; then
 					valid=true
 				else
@@ -315,6 +315,7 @@ function erase_server_params() {
 		done < "$SERVER_FILE"
 	fi
 
+	NB_SERVERS=$((NB_SERVERS-1))
 	print_available_servers "long"
 
 return 0
