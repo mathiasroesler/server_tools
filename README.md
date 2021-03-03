@@ -9,7 +9,7 @@ This project contains three scripts for common operations with remote server, na
 
 These scripts are to easily connect to, upload files to and download files from a remote server. They use either ssh or scp to connect the user to the server.
 
-The used servers are stored in the .servers file located in the $HOME directory. Each line of the file corresponds to one server and is stored in the following fashion: user@host port options.
+The used servers are stored in the .servers file located in the $HOME directory. Each line of the file corresponds to one server and is stored in the following fashion: user@host port options #comment.
 The options can be any option used with the scp and ssh utilies.
 
 ## Installation
@@ -27,26 +27,25 @@ Note: your password will be required to copy the files.
     
 ## Usage
 
-Because the scripts are moved into the /usr/local/bin folder during the installation process, they can be called from any directory. 
-
+Because the scripts are moved into the /usr/local/bin folder during the installation process, they can be called from anywhere. 
 The commands will search for the specified server in the .servers file. It is advised to use the line number associated with the desired server rather than typing the full name of the server. The latter option is also possible, however some option (such as the -d flag) require the line number method.
 For example, to connect to the first server stored in the file simply use the command
 
     $ remote-connection 1
     
-Or alternatively, if the first server in the list is `user@host`
-    
+This command is similar to the follwing if the first line of the server file is user@host
+
     $ remote-connection user@host
     
-You can specify a port number to connect to with the -p option and the any other flags to be used with the -o option. 
+You can specify a port number to connect to with the -p option and the any other flags to be used with the -o option. The default port number is 22.
 
-For example this command will connect to the server user@host at the port 6748 in verbose mode and use the 3des-cbc encryption, and upload file1 to ~/folder 
+For example this command will upload file1 to your home folder on the remote server user@host at the port 6748 in verbose mode and using the 3des-cbc encryption 
 
-    $ upload -p 6748 -o "-vc 3des-cbc" user@host file1 ~/folder
+    $ upload -p 6748 -o "-vc 3des-cbc" user@host file1 ""
     
 This would be equivalent to the following command if the third line in the .servers file is user@host 6748 -vc 3des-cbc
 
-    $ upload 3 file1 ~/folder
+    $ upload 3 file1 ""
     
 If you connect to a server that is not stored in the .servers file, you will be asked if you want to add it to the list. Alternatively, you can use the -a option to add a server to the file. 
 
