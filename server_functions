@@ -145,8 +145,9 @@ function set_connection_params() {
 
 	# Read the params from file if not specified by user.
 	if [[ $SERVER == false ]]; then
-		server_params=$(sed "${1}q;d" $SERVER_FILE)
-		readarray -d " " -t params<<<${server_params} # Parse line.
+		line=$(sed "${1}q;d" $SERVER_FILE)
+		readarray -d "#" -t contents<<<${line} # Parse line.
+		readarray -d " " -t params<<<${contents[0]} # Get the params.
 
 		server=${params[0]}
 
@@ -340,8 +341,10 @@ function modify_server() {
 
 	line_nb=$server
 
-	server_params=$(sed "${line_nb}q;d" $SERVER_FILE)
-	readarray -d " " -t params<<<${server_params} # Parse line.
+	line=$(sed "${line_nb}q;d" $SERVER_FILE)
+	readarray -d "#" -t contents<<<${line} # Parse line.
+	readarray -d " " -t params<<<${contents[0]} # Get the params.
+
 	server=${params[0]}
 
 	if [[ $PORT == false ]]; then
@@ -446,20 +449,38 @@ function print_available_servers() {
 
 	while read line
 	do
+		readarray -d "#" -t contents<<<${line}
+		readarray -d " " -t params<<<${contents[0]}
+
+		comments=${contents[@]:1}
+		server=${params[0]}
+		port=${params[@]:1:1}
+		options=${params[@]:2}
+		
+		echo " $cpt: $server"
+
 		if [[ $1 == long ]]; then
-			echo " $cpt: $line"
+			echo "    Port: $port"
+
+			if [[ -n $options ]]; then
+				echo "    Options: $options"
+			fi
+
+			if [[ -n $comments ]]; then
+			       	echo "    Comments: $comments"
+			fi
 
 		else
-			readarray -d " " -t word<<<${line}
-			echo " $cpt: ${word[0]}"
+			if [[ -n $comments ]]; then
+				echo "    Comments: $comments"
+			fi
 		fi
 
 		cpt=$((cpt+1))
+		echo ""
 	done < "$SERVER_FILE"
 
 	if [[ $1 == "help" || $2 == "help" ]]; then
-		echo ""
-
 		printf "The list of servers is stored in $SERVER_FILE with one server per line in the following fashion: "
 		echo "username@hostname port options"
 		echo "You can add a server by editing the file directly."
@@ -547,3 +568,4 @@ function argument_check() {
 
 return 0
 }
+
