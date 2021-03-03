@@ -257,6 +257,7 @@ function write_server_params() {
 	echo "$1" >> $SERVER_FILE
 	echo "Done."
 	NB_SERVERS=$((NB_SERVERS+1))
+	echo ""
 	print_available_servers "long"
 
 return 0
@@ -277,7 +278,7 @@ function delete_server() {
 		server_params=$(sed "${server}q;d" $SERVER_FILE)
 	fi
 
-	echo "Selected server: $server_params"
+	echo "Selected line: $server_params"
 
 	is_present=$(cat $SERVER_FILE | grep -E "^$server_params$")
 
@@ -330,6 +331,7 @@ function erase_server_params() {
 	fi
 
 	NB_SERVERS=$((NB_SERVERS-1))
+	echo ""
 	print_available_servers "long"
 
 return 0
@@ -372,12 +374,13 @@ function modify_server() {
 		comment=${content[@]:1}
 	fi
 
-	echo "Selected server: ${line}"
+	echo "Selected line: ${line}"
 	set_mod_params
-	echo "New server: $server_params"
+	echo "New line: $server_params"
 
 	sed -i "${line_nb} s/.*/$server_params/" $SERVER_FILE
 
+	echo ""
 	print_available_servers "long"
 
 return 0
@@ -435,7 +438,7 @@ function print_info() {
 
 	# Print comment if not empty.
 	if [[ -n $comment ]]; then
-		printf "Comments: "
+		printf "Comment: "
 		echo $comment
 	fi
 
@@ -461,7 +464,6 @@ function print_available_servers() {
 	# Arguments:
 	# Returns:
 	#
-	echo ""
 	if [[ $NB_SERVERS -eq 1 ]]; then
 		echo "There is currently $NB_SERVERS available server:"
 
@@ -491,12 +493,12 @@ function print_available_servers() {
 			fi
 
 			if [[ -n $comment ]]; then
-			       	echo "    Comments: $comment"
+			       	echo "    Comment: $comment"
 			fi
 
 		else
 			if [[ -n $comment ]]; then
-				echo "    Comments: $comment"
+				echo "    Comment: $comment"
 			fi
 		fi
 
