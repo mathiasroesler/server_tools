@@ -19,7 +19,7 @@ function print_usage() {
 	# Arguments:
 	# Return:
 	#
-	printf "Usage: $NAME [-hlL] [-adm server] [-p port] [-o options] server \n" 
+	printf "Usage: $NAME [-hlL] [-adm server] [-p port] [-o options] [-c comment] server \n" 
 	printf "Connects to a remote server using ssh.\n\n"
 	print_options
 

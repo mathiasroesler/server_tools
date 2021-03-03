@@ -18,7 +18,7 @@ function print_usage() {
 	# Arguments:
 	# Return:
 	#
-	printf "Usage: $NAME [-hlLr] [-adm server] [-p port] [-o options] server file ... "
+	printf "Usage: $NAME [-hlLr] [-adm server] [-p port] [-o options] [-c comment] server file ... "
 	printf "destination\n"
 	printf "Copy file to remote server destination or multiple files "
 	printf "to remote server destination using scp.\n\n"
