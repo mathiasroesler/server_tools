@@ -177,7 +177,7 @@ function set_connection_params() {
 
 		server_params="$server $port_number $options"
 
-		is_present=$(cat $SERVER_FILE | grep -E "^$server_params$")
+		is_present=$(cat $SERVER_FILE | grep -E "^$server_params*")
 
 		if [[ -z $is_present ]]; then
 			echo "$server_params is a new server."
@@ -231,7 +231,7 @@ function add_server() {
 	server_check $server
 	set_mod_params
 
-	is_present=$(cat $SERVER_FILE | grep -E "^$server_params$")
+	is_present=$(cat $SERVER_FILE | grep -E "^$server_params*")
 	echo "New server: $server_params"
 
 	if [[ -n $is_present ]]; then
@@ -280,7 +280,7 @@ function delete_server() {
 
 	echo "Selected line: $server_params"
 
-	is_present=$(cat $SERVER_FILE | grep -E "^$server_params$")
+	is_present=$(cat $SERVER_FILE | grep -E "^$server_params*")
 
 	if [[ -z $is_present ]]; then
 		echo "Server with specified parameters is not present in the list."
