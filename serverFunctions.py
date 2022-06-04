@@ -388,8 +388,7 @@ def add_server(file_path):
     Returns:
 
     """
-    server_list = get_servers(file_path)
-    list_servers(server_list, True)
+    list_servers(file_path, True)
 
     print("Instructions:")
     print(" Provide the user, host, port, options and comment.")
@@ -429,7 +428,7 @@ def remove_server(file_path):
 
     """
     server_list = get_servers(file_path)
-    list_servers(server_list, True)
+    list_servers(file_path, True)
 
     server_ids = ''
     new_server_list = []
@@ -480,7 +479,7 @@ def modify_server(file_path):
 
     """
     server_list = get_servers(file_path)
-    list_servers(server_list, True)
+    list_servers(file_path, True)
 
     server_id = ''
     modify_flag = False
