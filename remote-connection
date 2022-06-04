@@ -1,10 +1,10 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 #########################################################
 ### Bash script to connect to a remote server.        	#
 ### Last modified: 02/2021			      	#
 ### Author: Mathias Roesler		      	      	#
-### Contact: mathias.roesler@univ-reims.fr    	      	#
+### Contact: mathias.roesler@reseau-figure.org 		#
 #########################################################
 
 
@@ -13,8 +13,8 @@ source server_functions
 define_const
 
 
-function print_usage() {
-	# Prints function usage.
+print_usage() {
+	# Prints usage.
 	#
 	# Arguments:
 	# Return:
@@ -59,4 +59,19 @@ argument_nb_check $# 1
 set_connection_params $1
 
 print_info
-ssh -p $port_number $options $server 
+LOGIN_DATE=$(date +"%a %d-%m-%y %T")
+
+ssh -p $port_number $options $server
+
+if [[ $? == 255 ]]; then
+	MESSAGE="$LOGIN_DATE LOGIN failed to $server by local user $(whoami)"
+	log_activity $LOG_FILE "$MESSAGE"
+
+else 
+	LOGOUT_DATE=$(date +"%a %d-%m-%y %T")
+	MESSAGE="$LOGIN_DATE LOGIN successful to $server by local user $(whoami)"
+	log_activity $LOG_FILE "$MESSAGE"
+
+	MESSAGE="$LOGOUT_DATE LOGOUT from $server by local user $(whoami)"
+	log_activity $LOG_FILE "$MESSAGE"
+fi

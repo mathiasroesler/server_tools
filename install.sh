@@ -43,7 +43,7 @@ function override() {
 		case $answer in
 			y)
 				SCRIPTS="$SCRIPTS $1"
-				sudo rm -f $1
+				rm -f $1
 				valid=true
 				;;
 			n)
@@ -62,22 +62,19 @@ return 0
 
 NAME=`basename $0`
 CUR_DIR=$(pwd)
-DESTINATION="/usr/local/bin"
+BIN_DEST="$HOME/.local/bin"
+SERVER_DEST="$HOME/.local/var"
 EXEC_SCRIPTS="upload download remote-connection"
 SCRIPTS=""
 
 chmod +x $EXEC_SCRIPTS
 
-echo "Checking for existence of destination."
-if [[ ! -d $DESTINATION ]]; then
-	echo "$NAME: $DESTINATION does not exist."
-	echo "Exiting"
-	exit 1
+if [[ ! -d $BIN_DEST ]]; then
+	echo "Creating $BIN_DEST"
+	mkdir $BIN_DEST
 fi
 
-echo "Folder $DESTINATION exists."; echo
-
-cd $DESTINATION
+cd $BIN_DEST
 
 check_existence "upload"
 check_existence "download"
@@ -87,8 +84,8 @@ check_existence "server_functions"
 cd $CUR_DIR
 
 if [[ -n $SCRIPTS ]]; then
-	sudo cp $SCRIPTS $DESTINATION
-	echo "Copying$SCRIPTS to $DESTINATION"; echo
+	cp $SCRIPTS $BIN_DEST
+	echo "Copying $SCRIPTS to $BIN_DEST"; echo
 
 else
 	echo "Nothing to copy."; echo
@@ -98,7 +95,7 @@ fi
 SCRIPTS=""
 cd $HOME
 
-check_existence ".servers"
+check_existence "$SERVER_DEST/servers"
 
 if [[ -z $SCRIPTS && $copy == false ]]; then
 	echo "Nothing to replace."; echo
@@ -110,14 +107,14 @@ elif [[ -z $SCRIPTS ]]; then
 	echo "Nothing to replace."; echo
 
 else
-	echo "Creating$SCRIPTS file."; echo
-	touch "$HOME/.servers"
+	if [[ ! -d $SERVER_DEST ]]; then
+		echo "Creating $SERVER_DEST"
+		mkdir $SERVER_DEST
+	fi
+	echo "Creating$SCRIPTS"; echo
+	touch "$SERVER_DEST/servers"
 fi
 
-cd $CUR_DIR
-cd ../ 
-echo "Removing $CUR_DIR"
-rm -rf $CUR_DIR
 echo "Done."
 exit 0
 

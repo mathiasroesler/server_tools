@@ -1,10 +1,11 @@
 #!/bin/bash
+#!/usr/bin/env bash
 
 #########################################################
 ### Bash script to upload files to remote server. 	#
 ### Last modified: 02/2021		      		#
 ### Author: Mathias Roesler		      		#
-### Contact: mathias.roesler@univ-reims.fr    		#
+### Contact: mathias.roesler@reseau-figure.org 		#
 #########################################################
 
 
@@ -12,8 +13,8 @@ source server_functions
 define_const
 
 
-function print_usage() {
-	# Prints function usage.
+print_usage() {
+	# Prints usage.
 	#
 	# Arguments:
 	# Return:
@@ -58,21 +59,42 @@ set_connection_params $1; shift
 ARGS="$@"
 
 if [[ $# -gt 1 ]]; then
-	destination=${@: -1}
-	files=${ARGS%${destination}}
+	DESTINATION=${@: -1}
+	FILES=${ARGS%${DESTINATION}}
 
 else
 	# If only the source was given.
-	destination=""
-	files=$ARGS
+	DESTINATION=""
+	FILES=$ARGS
 fi
+
+UPLOAD_DATE=$(date +"%a %d-%m-%y %T")
 
 if [[ $RECURSIVE == 'true' ]]; then
 	print_info
-	scp -rP $port_number $files $options $server:$destination
+	scp -rP $port_number $FILES $options $server:$DESTINATION
 
 else
 	print_info
-	scp -P $port_number $files $options $server:$destination
+	scp -P $port_number $FILES $options $server:$DESTINATION
 fi
 
+SUCCESS=$?
+
+if [[ $DESTINATION == "" || $DESTINATION == "." ]]; then
+	readarray -d "@" -t HOST<<<$server
+	DESTINATION="/home/${HOST[0]}"
+fi
+
+
+if [[ $SUCCESS != 0 ]]; then
+	# An error occured
+	MESSAGE="$UPLOAD_DATE UPLOAD failed to $server of $FILES to $DESTINATION of remote user ${HOST[0]}"
+	log_activity $LOG_FILE "$MESSAGE"
+
+else
+	# No error
+	MESSAGE="$UPLOAD_DATE UPLOAD successful to $server of $FILES to $DESTINATION of remote user ${HOST[0]}"
+	log_activity $LOG_FILE "$MESSAGE"
+
+fi
