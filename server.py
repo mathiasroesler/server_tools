@@ -12,32 +12,33 @@ import subprocess
 
 class Server:
     ## Init method ##
-    def __init__(self, server_args):
+    def __init__(self, server_elems):
         """ Initialise server object.
 
         Arguments:
-        server_args -- list[str], arguments from the server,
+        server_elems -- list[str], elems of a server object,
             0: user@host
             1: port number
             2: options
+            3: comment
 
         Returns:
         server -- Server, server object.
         
         """
         # Split comment from other args.
-        tmp_parsed_server_args = server_args.split('#') 
-        self.comment = tmp_parsed_server_args[1]
+        tmp_parsed_server_elems = server_elems.split('#') 
+        self.comment = tmp_parsed_server_elems[1]
 
         # Split server, port and options.
-        tmp_parsed_server_args = tmp_parsed_server_args[0].split(' ') 
-        self.port = tmp_parsed_server_args[1]
-        self.options = tmp_parsed_server_args[2] # '' if no options.
+        tmp_parsed_server_elems = tmp_parsed_server_elems[0].split(' ') 
+        self.port = tmp_parsed_server_elems[1]
+        self.options = tmp_parsed_server_elems[2] # '' if no options.
 
         # Split user and host.
-        tmp_parsed_server_args = tmp_parsed_server_args[0].split('@')
-        self.user = tmp_parsed_server_args[0]
-        self.host = tmp_parsed_server_args[1]
+        tmp_parsed_server_elems = tmp_parsed_server_elems[0].split('@')
+        self.user = tmp_parsed_server_elems[0]
+        self.host = tmp_parsed_server_elems[1]
 
 
     def __str__(self):
@@ -49,10 +50,11 @@ class Server:
         server_str -- str, information of server in str format.
 
         """
-        return ' '.join(['@'.join([self.user, self.host]), 
+        server_args = ' '.join(['@'.join([self.user, self.host]), 
                 self.port, 
-                self.options, 
-                self.comment])
+                self.options]) 
+
+        return '#'.join([server_args, self.comment])
 
 
     ## Getters ##
