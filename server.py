@@ -25,6 +25,13 @@ def parser_add_server(args):
     serverFunctions.add_server(args.path)
     
 
+def parser_remove_server(args):
+    """ Calls remove_server() from the parser.
+
+    See serverFunctions.remove_server for more details.
+    """
+    serverFunctions.remove_server(args.path)
+
 
 ## Main program ##
 if __name__ == "__main__":
@@ -35,7 +42,7 @@ if __name__ == "__main__":
     subparsers = parser.add_subparsers(title="available subcommands")
     
     # List subcommand parser
-    list_parser = subparsers.add_parser('list', help="List available servers")
+    list_parser = subparsers.add_parser("list", help="List available servers")
     list_parser.add_argument("-v", "--verbose", action="store_true", help=
             "prints extra information")
     list_parser.add_argument("--path", type=str, default=server_path, help=
@@ -43,11 +50,18 @@ if __name__ == "__main__":
     list_parser.set_defaults(func=parser_list_servers)
 
     # Add subcommand parser
-    add_parser = subparsers.add_parser('add', help=
+    add_parser = subparsers.add_parser("add", help=
             "Add a server to the list of available servers")
     add_parser.add_argument("--path", type=str, default=server_path, help=
             "path to a server list file")
     add_parser.set_defaults(func=parser_add_server) 
+
+    # Remove subcommand parser
+    remove_parser = subparsers.add_parser("remove", help=
+            "Remove a server from the list of available servers")
+    remove_parser.add_argument("--path", type=str, default=server_path, help=
+            "path to a server list file")
+    remove_parser.set_defaults(func=parser_remove_server) 
 
 
     args = parser.parse_args() 
