@@ -60,6 +60,15 @@ def parser_upload_server(args):
             args.options, args.source, args.target, args.recursive)
 
 
+def parser_download_server(args):
+    """ Calls download_server() from the parser.
+
+    See serverFunctions.download_server for more details.
+    """
+    serverFunctions.download_server(args.path, args.server, args.port,
+            args.options, args.source, args.target, args.recursive)
+
+
 ## Main program ##
 if __name__ == "__main__":
     server_path = os.path.join(os.path.expanduser('~'), ".local/var/servers")
@@ -126,6 +135,24 @@ if __name__ == "__main__":
     upload_parser.add_argument("-P", "--path", type=str, default=server_path, 
             help="path to a server list file")
     upload_parser.set_defaults(func=parser_upload_server) 
+
+    # Download subcommand parser
+    download_parser = subparsers.add_parser("download", help=
+            "Download file(s) from a remote server")
+    download_parser.add_argument("server", type=str, help=
+            "server number or server name (user@host)")
+    download_parser.add_argument("source", type=str, help=
+            "path to file(s) to download")
+    download_parser.add_argument("-t", "--target", type=str, default='.', help=
+            "path to file(s) destination on the local machine")
+    download_parser.add_argument("-r", "--recursive", action='store_false',
+            help="download file(s) recursively")
+    download_parser.add_argument("-p", "--port", type=str, help="port number")
+    download_parser.add_argument("-o", "--options", type=str, default='', help=
+            "additional arguments for download")
+    download_parser.add_argument("-P", "--path", type=str, default=server_path, 
+            help="path to a server list file")
+    download_parser.set_defaults(func=parser_download_server) 
 
     args = parser.parse_args() 
     args.func(args)

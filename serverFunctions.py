@@ -10,7 +10,7 @@ import os
 import sys
 import getpass
 import subprocess
-from scp import SCPClient
+from scp import SCPClient, SCPException
 from paramiko import SSHClient
 
 
@@ -277,6 +277,12 @@ class Server:
                         file_path))
                     exit(2)
 
+                except SCPException:
+                    sys.stderr.write("Error with destination {}.\n".format(
+                        dest_path))
+                    exit(3)
+                    
+
 
     def download(self, file_path, dest_path='.', recursive=False):
         """ Downloads the file(s) to the server.
@@ -314,7 +320,7 @@ class Server:
             with SCPClient(ssh.get_transport()) as scp:
                 try:
                     if recursive:
-                        scp.get(file_path, remote_path=dest_path, 
+                        scp.get(file_path, local_path=dest_path, 
                                 recursive=recursive)
 
                     else:
@@ -322,8 +328,14 @@ class Server:
 
                 except FileNotFoundError:
                     sys.stderr.write("{}: No such file or directory.\n".format(
-                        file_path))
+                        dest_path))
                     exit(2)
+
+                except SCPException:
+                    sys.stderr.write("Error with source {}.\n".format(
+                        file_path))
+                    exit(3)
+
 
 ######################
 ## Server functions ##
@@ -605,7 +617,7 @@ def upload_server(file_path, server_id, port, options, src_path, dest_path,
     options -- str, additional options.
     src_path -- str, path to the file(s) to upload.
     dest_path -- str, path to file(s) destination,
-    recursive -- boolean, uploads files recursively if True,
+    recursive -- boolean, uploads file(s) recursively if True,
 
     Returns:
 
@@ -645,6 +657,60 @@ def upload_server(file_path, server_id, port, options, src_path, dest_path,
 
         server_object = Server(server_elems)
         server_object.upload(src_path, dest_path, recursive)
+
+
+def download_server(file_path, server_id, port, options, src_path, dest_path, 
+        recursive):
+    """ Uploads files to the selected server.
+
+    Arguments:
+    file_path -- str, path to file containing the servers.
+    server_id -- str, server number in the list of available
+        servers or server name (user@host).
+    port -- str, port number.
+    options -- str, additional options.
+    src_path -- str, path to the file(s) to download.
+    dest_path -- str, path to file(s) destination,
+    recursive -- boolean, downloads file(s) recursively if True,
+
+    Returns:
+
+    """
+    server_list = get_servers(file_path)
+
+    try:
+        server_id = int(server_id)
+        server_object = Server(server_list[server_id-1])
+
+        if port != None:
+            server_object.set_port(port)
+
+        if options != None:
+            server_object.set_options(options)
+
+        server_object.download(src_path, dest_path, recursive)
+
+    except ValueError:
+        server_id = server_id.split('@')
+
+        if len(server_id) <= 2:
+            sys.stderr.write(
+                    "Error: server {} could not be processed.\n".format(
+                        server_id))
+            exit(1)
+
+        server_name = '@'.join([server_id[0], server_id[1]])
+
+        if port != None:
+            port = 22
+
+        server_elems = ' '.join([server_name,
+                port, 
+                options,
+                '#']) 
+
+        server_object = Server(server_elems)
+        server_object.download(src_path, dest_path, recursive)
 
 
 def ask_input(prompt, exit_char='q', modify=False):
