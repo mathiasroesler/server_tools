@@ -7,6 +7,7 @@
 
 import os
 import sys
+import subprocess
 
 
 class Server:
@@ -31,7 +32,7 @@ class Server:
         # Split server, port and options.
         tmp_parsed_server_args = tmp_parsed_server_args[0].split(' ') 
         self.port = tmp_parsed_server_args[1]
-        self.options = tmp_parsed_server_args[2] # ' ' if no options.
+        self.options = tmp_parsed_server_args[2] # '' if no options.
 
         # Split user and host.
         tmp_parsed_server_args = tmp_parsed_server_args[0].split('@')
@@ -174,3 +175,27 @@ class Server:
 
         """
         self.comment = new_comment
+
+
+    ## Methods ##
+    def connect(self):
+        """ Connects to the remote server via ssh.
+
+        Arguments:
+
+        Returns:
+
+        """
+        if self.options != '':
+            arguments = ' '.join(["-p " + self.port, self.options])
+
+        else:
+            arguments = "-p " + self.port
+
+        try:
+            subprocess.run(["ssh", arguments, '@'.join([self.user, self.host])])
+
+        except KeyboardInterrupt:
+            sys.stderr.write("Connection to {}@{} canceled.\n".format(
+                self.user, self.host))
+
