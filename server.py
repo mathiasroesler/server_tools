@@ -1,13 +1,14 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
-# Server class.
+# Main program and argument parser functions.
 # Author: Mathias Roesler
 # Last modified: 06/22
 
 import os
 import argparse
 import serverFunctions
+
 
 def parser_list_servers(args):
     """ Calls list_servers() from the parser.
@@ -39,6 +40,15 @@ def parser_modify_server(args):
     See serverFunctions.modify_server for more details.
     """
     serverFunctions.modify_server(args.path)
+
+
+def parser_connect_server(args):
+    """ Calls connect_server() from the parser.
+
+    See serverFunctions.connect_server for more details.
+    """
+    serverFunctions.connect_server(args.path, args.server, args.port,
+            args.options)
 
 
 ## Main program ##
@@ -78,6 +88,18 @@ if __name__ == "__main__":
             "path to a server list file")
     modify_parser.set_defaults(func=parser_modify_server) 
     
+
+    # Connect subcommand parser
+    connect_parser = subparsers.add_parser("connect", help=
+            "Connect to a remote server")
+    connect_parser.add_argument("server", type=str, help=
+            "server number or server name (user@host)")
+    connect_parser.add_argument("--port", type=str, help="port number")
+    connect_parser.add_argument("--options", type=str, default='', help=
+            "additional arguments for connection")
+    connect_parser.add_argument("--path", type=str, default=server_path, help=
+            "path to a server list file")
+    connect_parser.set_defaults(func=parser_connect_server) 
 
 
     args = parser.parse_args() 

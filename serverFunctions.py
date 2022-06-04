@@ -540,6 +540,59 @@ def modify_server(file_path):
         print("Server modified successfully.")
     
 
+def connect_server(file_path, server_id, port, options):
+    """ Connects to the selected server.
+
+    Arguments:
+    file_path -- str, path to file containing the servers.
+    server_id -- str, server number in the list of available
+        servers or server name (user@host).
+    port -- str, port number.
+    options -- str, additional options.
+
+    Returns:
+
+    """
+    server_list = get_servers(file_path)
+
+    try:
+        # If the server_id is a server number
+        server_id = int(server_id)
+        server_object = Server(server_list[server_id-1])
+
+        if port != None:
+            server_object.set_port(port)
+
+        if options != '':
+            server_object.set_options('-'+options)
+
+        server_object.connect()
+
+    except ValueError:
+        # If the server_id is a server name
+        split_server_id = server_id.split('@')
+
+        if len(server_id) <= 2:
+            sys.stderr.write(
+                    "Error: server {} could not be processed.\n".format(
+                        server_id))
+            exit(1)
+
+        if port == None:
+            port = '22'
+
+        if options != '':
+            options = '-' + options
+
+        server_elems = ' '.join([server_id,
+                port, 
+                options,
+                '#']) 
+
+        server_object = Server(server_elems)
+        server_object.connect()
+
+
 def ask_input(prompt, exit_char='q', modify=False):
     """ Asks for user input.
 
