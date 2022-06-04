@@ -71,7 +71,7 @@ def add_server(file_path):
     server_list = get_servers(file_path)
     list_servers(server_list, True)
 
-    print("\nInstructions:")
+    print("Instructions:")
     print(" Provide the user, host, port, options and comment.")
     print(" A user and host must be provided.")
     print(" Press q to quit.")
@@ -95,6 +95,59 @@ def add_server(file_path):
                 '']) 
 
         f_handle.write('#'.join([server_args, comment + '\n']))
+
+    print("Server added successfully.")
+
+
+def remove_server(file_path):
+    """ Removes a server from the list of servers
+    
+    Arguments:
+    file_path -- str, path to file containing the servers.
+
+    Returns:
+
+    """
+    server_list = get_servers(file_path)
+    list_servers(server_list, True)
+
+    server_ids = ''
+    new_server_list = []
+    
+    print("Instructions: ")
+    print(" Select server numbers only.")
+    print(" Separate servers with a comma and no space.")
+    print(" Type q to quit.\n")
+
+    try:
+        while server_ids == '':
+            server_ids = input("Select servers: ")
+
+            if server_ids == 'q':
+                exit(0)
+
+    except KeyboardInterrupt:
+        print("")
+        exit(1)
+
+    server_ids = [int(value) for value in server_ids.split(',')]
+
+    for i in range(len(server_list)):
+        if i+1 not in server_ids:
+            new_server_list.append(server_list[i])
+
+    with open(file_path, 'w') as f_handle:
+        for item in new_server_list:
+            f_handle.write(item)
+
+    if len(server_list) == len(new_server_list):
+        print("No servers removed.")
+
+    elif len(server_ids) > 1:
+        print("Servers removed successfully.")
+
+    else:
+        print("Server removed successfully.")
 
 
 def ask_input(prompt, exit_char='q'):
