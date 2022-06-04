@@ -42,6 +42,7 @@ class Server:
         tmp_parsed_server_elems = tmp_parsed_server_elems[0].split('@')
         self.user = tmp_parsed_server_elems[0]
         self.host = tmp_parsed_server_elems[1]
+        self.server_name = '@'.join([self.user, self.host])
 
 
     def __str__(self):
@@ -53,7 +54,7 @@ class Server:
         server_str -- str, information of server in str format.
 
         """
-        server_args = ' '.join(['@'.join([self.user, self.host]), 
+        server_args = ' '.join([self.server_name,
                 self.port, 
                 self.options]) 
 
@@ -83,6 +84,18 @@ class Server:
 
         """
         return self.host
+
+
+    def get_server_name(self):
+        """ Gets the server name.
+
+        Argument:
+
+        Returns:
+        server_name -- str, server name.
+
+        """
+        return self.server_name
 
 
     def get_port(self):
@@ -125,6 +138,7 @@ class Server:
     def set_user(self, new_user):
         """ Sets the server user.
 
+        Resets the server name as well.
         Arguments:
         new_user -- str, new server user.
 
@@ -132,11 +146,13 @@ class Server:
 
         """
         self.user = new_user
+        self.server_name = '@'.join([self.user, self.host])
 
 
     def set_host(self, new_host):
         """ Sets the server host.
 
+        Resets the server name as well.
         Arguments:
         new_host -- str, new server host.
 
@@ -144,6 +160,7 @@ class Server:
 
         """
         self.host = new_host
+        self.server_name = '@'.join([self.user, self.host])
 
 
     def set_port(self, new_port):
@@ -198,7 +215,7 @@ class Server:
             arguments = "-p " + self.port
 
         try:
-            subprocess.run(["ssh", arguments, '@'.join([self.user, self.host])])
+            subprocess.run(["ssh", arguments, self.server_name])
 
         except KeyboardInterrupt:
             sys.stderr.write("Connection to {}@{} canceled.\n".format(
