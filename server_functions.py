@@ -58,3 +58,74 @@ def list_servers(server_list, verbose=False):
 
         print("    Comment: {}".format(server_object.get_comment()))
      
+
+def add_server(file_path):
+    """ Adds a server to the list of servers.
+
+    Arguments:
+    file_path -- str, path to file containing the servers.
+
+    Returns:
+
+    """
+    server_list = get_servers(file_path)
+    list_servers(server_list, True)
+
+    print("\nInstructions:")
+    print(" Provide the user, host, port, options and comment.")
+    print(" A user and host must be provided.")
+    print(" Press q to quit.")
+    print(" Press enter to provide default values.")
+    print(" Default port: 22 | Default options: '' | Default comment: ''i\n")
+    
+    user = ask_input("User")
+    host = ask_input("Host")
+    port = ask_input("Port")
+    options = ask_input("Options")
+    comment = ask_input("Comment")
+
+    if port == '':
+        port = "22"
+
+    with open(file_path, 'a') as f_handle:
+        server_name = '@'.join([user, host])
+        server_args = ' '.join([server_name,
+                port, 
+                options,
+                '']) 
+
+        f_handle.write('#'.join([server_args, comment + '\n']))
+
+
+def ask_input(prompt, exit_char='q'):
+    """ Asks for user input.
+
+    If exit_char is provided then the function exits.
+    Arguments:
+    prompt -- str, prompt for the user.
+    exit_char -- str, character to type for immediate exit.
+
+    Returns:
+    answer -- str, user answer.
+
+    """
+    try:
+        answer = input("{}: ".format(prompt))
+
+        if prompt == "Host" or prompt == "User":
+            while answer == exit_char or answer == '':
+                if answer == exit_char:
+                    exit(0)
+
+                print("A {} must be provided.\n".format(prompt.lower()))
+                answer = input("{}: ".format(prompt))
+
+        else:
+            if answer == exit_char:
+                exit(0)
+
+    except KeyboardInterrupt:
+        print("")
+        exit(1)
+
+    return answer
