@@ -51,6 +51,15 @@ def parser_connect_server(args):
             args.options)
 
 
+def parser_upload_server(args):
+    """ Calls upload_server() from the parser.
+
+    See serverFunctions.upload_server for more details.
+    """
+    serverFunctions.upload_server(args.path, args.server, args.port,
+            args.options, args.source, args.target, args.recursive)
+
+
 ## Main program ##
 if __name__ == "__main__":
     server_path = os.path.join(os.path.expanduser('~'), ".local/var/servers")
@@ -77,30 +86,46 @@ if __name__ == "__main__":
     # Remove subcommand parser
     remove_parser = subparsers.add_parser("remove", help=
             "Remove a server from the list of available servers")
-    remove_parser.add_argument("--path", type=str, default=server_path, help=
-            "path to a server list file")
+    remove_parser.add_argument("-P", "--path", type=str, default=server_path,
+            help="path to a server list file")
     remove_parser.set_defaults(func=parser_remove_server) 
     
     # Modify subcommand parser
     modify_parser = subparsers.add_parser("modify", help=
             "Modify a server from the list of available servers")
-    modify_parser.add_argument("--path", type=str, default=server_path, help=
-            "path to a server list file")
+    modify_parser.add_argument("-P", "--path", type=str, default=server_path,
+            help="path to a server list file")
     modify_parser.set_defaults(func=parser_modify_server) 
     
-
     # Connect subcommand parser
     connect_parser = subparsers.add_parser("connect", help=
             "Connect to a remote server")
     connect_parser.add_argument("server", type=str, help=
             "server number or server name (user@host)")
-    connect_parser.add_argument("--port", type=str, help="port number")
-    connect_parser.add_argument("--options", type=str, default='', help=
+    connect_parser.add_argument("-p", "--port", type=str, help="port number")
+    connect_parser.add_argument("-o", "--options", type=str, default='', help=
             "additional arguments for connection")
-    connect_parser.add_argument("--path", type=str, default=server_path, help=
-            "path to a server list file")
+    connect_parser.add_argument("-P", "--path", type=str, default=server_path,
+            help="path to a server list file")
     connect_parser.set_defaults(func=parser_connect_server) 
 
+    # Upload subcommand parser
+    upload_parser = subparsers.add_parser("upload", help=
+            "Upload file(s) to a remote server")
+    upload_parser.add_argument("server", type=str, help=
+            "server number or server name (user@host)")
+    upload_parser.add_argument("source", type=str, help=
+            "path to file(s) to upload")
+    upload_parser.add_argument("-t", "--target", type=str, default='.', help=
+            "path to file(s) destination on the server")
+    upload_parser.add_argument("-r", "--recursive", action='store_false',
+            help="upload file(s) recursively")
+    upload_parser.add_argument("-p", "--port", type=str, help="port number")
+    upload_parser.add_argument("-o", "--options", type=str, default='', help=
+            "additional arguments for upload")
+    upload_parser.add_argument("-P", "--path", type=str, default=server_path, 
+            help="path to a server list file")
+    upload_parser.set_defaults(func=parser_upload_server) 
 
     args = parser.parse_args() 
     args.func(args)
