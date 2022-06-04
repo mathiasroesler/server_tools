@@ -52,3 +52,125 @@ class Server:
                 self.port, 
                 self.options, 
                 self.comment])
+
+
+    ## Getters ##
+    def get_user(self):
+        """ Gets the server user.
+
+        Arguments:
+
+        Returns:
+        user -- str, server user.
+
+        """
+        return self.user
+
+
+    def get_host(self):
+        """ Gets the server host.
+
+        Arguments:
+
+        Returns:
+        host -- str, server host.
+
+        """
+        return self.host
+
+
+    def get_port(self):
+        """ Gets the server port number.
+
+        Arguments:
+
+        Returns:
+        port -- str, server port number.
+
+        """
+        return self.port
+
+
+    def get_options(self):
+        """ Gets the server options.
+
+        Arguments:
+
+        Returns:
+        options -- str, server options.
+
+        """
+        return self.options
+
+
+    def get_comment(self):
+        """ Gets the server comment.
+
+        Arguments:
+
+        Returns:
+        comment -- str, server comment.
+
+        """
+        return self.comment
+
+
+    ## Setters ##
+    def set_user(self, new_user):
+        """ Sets the server user.
+
+        Arguments:
+        new_user -- str, new server user.
+
+        Returns:
+
+        """
+        self.user = new_user
+
+
+    def set_host(self, new_host):
+        """ Sets the server host.
+
+        Arguments:
+        new_host -- str, new server host.
+
+        Returns:
+
+        """
+        self.host = new_host
+
+
+    def set_port(self, new_port):
+        """ Sets the server port number.
+
+        Arguments:
+        new_port -- str, new server port number.
+
+        Returns:
+
+        """
+        self.port = new_port
+
+
+    def set_options(self, new_options):
+        """ Sets the server options.
+
+        Arguments:
+        new_options -- str, new server options.
+
+        Returns:
+
+        """
+        self.options = new_options
+
+
+    def set_comment(self, new_comment):
+        """ Sets the server comment.
+
+        Arguments:
+        new_comment -- str, new server comment.
+
+        Returns:
+
+        """
+        self.comment = new_comment
