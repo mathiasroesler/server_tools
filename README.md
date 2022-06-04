@@ -9,26 +9,34 @@ This project contains three scripts for common operations with remote server, na
 
 These scripts are to easily connect to, upload files to and download files from a remote server. They use either ssh or scp to connect the user to the server.
 
-The used servers are stored in the .servers file located in the $HOME directory. Each line of the file corresponds to one server and is stored in the following fashion: user@host port options #comment.
-The options can be any option used with the scp and ssh utilies.
+The used servers are stored in the servers file located in the $HOME/.local/var directory. Each line of the file corresponds to one server and is stored in the following fashion: user@host port options #comment.
+The options can be any option used with scp or ssh.
 
 ## Installation
 
-The installation process will create a file to store the available servers and move the scripts to /usr/local/bin.
+The installation process will create a file to store the available servers and move the scripts to $HOME/.local/bin
 
 To install enter the following commands:
 
-    $ git clone  https://github.com/mathiasroesler/server_tools.git
+    $ git clone git@github.com:mathiasroesler/server_tools.git
     $ cd server_tools
     $ chmod +x install.sh
     $ ./install.sh
 
-Note: your password will be required to copy the files.
-    
 ## Usage
 
-Because the scripts are moved into the /usr/local/bin folder during the installation process, they can be called from anywhere. 
-The commands will search for the specified server in the .servers file. It is advised to use the line number associated with the desired server rather than typing the full name of the server. The latter option is also possible, however some option (such as the -d flag) require the line number method.
+To be able to call the functions, make sure that $HOME/.local/bin is present in
+your $PATH variable. Check the $PATH variable with the following command: 
+    $ echo $PATH
+
+If the folder is not present in the list use the following command to add it:
+    $ PATH = $PATH:$HOME/.local/bin 
+
+To make the changes permanent add the previous command at the end of the .bashrc
+file:
+    $ echo PATH = $PATH:$HOME/.local/bin >> ~/.bashrc
+
+The commands will search for the specified server in the servers file. It is advised to use the line number associated with the desired server rather than typing the full name of the server. The latter option is also possible, however some option (such as the -d flag) require the line number method.
 For example, to connect to the first server stored in the file simply use the command
 
     $ remote-connection 1
