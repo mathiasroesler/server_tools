@@ -251,3 +251,52 @@ class Server:
                 except FileNotFoundError:
                     sys.stderr.write("{}: No such file or directory.\n".format(
                         file_path))
+                    exit(2)
+
+
+    def download(self, file_path, dest_path='.', recursive=False):
+        """ Downloads the file(s) to the server.
+
+        Arguments:
+        file_path -- str or list[str], path file or list of paths
+            of files to download.
+        dest_path -- str, path to file(s) destination,
+            default value: '.'.
+        recursive -- boolean, downloads files recursively if True,
+            defaut value: False.
+
+        Returns:
+
+        """
+        with SSHClient() as ssh:
+            ssh.load_system_host_keys()
+            password_prompt = "{}@{}'s password: ".format(
+                    self.user, self.host)
+
+            try:
+                password = getpass.getpass(password_prompt)
+
+            except KeyboardInterrupt:
+                sys.stderr.write("\nConnection to {}@{} canceled.\n".format(
+                    self.user, self.host))
+                exit(1)
+
+            ssh.connect(self.get_host(), 
+                    port=int(self.get_port()), 
+                    username=self.get_user(), 
+                    password=password)
+
+
+            with SCPClient(ssh.get_transport()) as scp:
+                try:
+                    if recursive:
+                        scp.get(file_path, remote_path=dest_path, 
+                                recursive=recursive)
+
+                    else:
+                        scp.get(file_path, remote_path=dest_path)
+
+                except FileNotFoundError:
+                    sys.stderr.write("{}: No such file or directory.\n".format(
+                        file_path))
+                    exit(2)
