@@ -56,7 +56,8 @@ class Server:
         """
         server_args = ' '.join([self.server_name,
                 self.port, 
-                self.options]) 
+                self.options,
+                '']) 
 
         return '#'.join([server_args, self.comment])
 
