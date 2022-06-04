@@ -33,6 +33,14 @@ def parser_remove_server(args):
     serverFunctions.remove_server(args.path)
 
 
+def parser_modify_server(args):
+    """ Calls modify_server() from the parser.
+
+    See serverFunctions.modify_server for more details.
+    """
+    serverFunctions.modify_server(args.path)
+
+
 ## Main program ##
 if __name__ == "__main__":
     server_path = os.path.join(os.path.expanduser('~'), ".local/var/servers")
@@ -62,6 +70,14 @@ if __name__ == "__main__":
     remove_parser.add_argument("--path", type=str, default=server_path, help=
             "path to a server list file")
     remove_parser.set_defaults(func=parser_remove_server) 
+    
+    # Modify subcommand parser
+    modify_parser = subparsers.add_parser("modify", help=
+            "Modify a server from the list of available servers")
+    modify_parser.add_argument("--path", type=str, default=server_path, help=
+            "path to a server list file")
+    modify_parser.set_defaults(func=parser_modify_server) 
+    
 
 
     args = parser.parse_args() 

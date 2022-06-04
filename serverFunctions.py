@@ -485,7 +485,7 @@ def modify_server(file_path):
     modify_flag = False
 
     print("Instructions: ")
-    print(" Select one task number only.")
+    print(" Select one server number only.")
     print(" Press enter to leave field unchanged.")
     print(" Type q to quit.\n")
 
