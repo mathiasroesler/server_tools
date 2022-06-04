@@ -8,6 +8,7 @@
 
 import os
 import sys
+from server import Server
 
 
 def get_servers(file_path):
@@ -34,3 +35,26 @@ def get_servers(file_path):
         server_list = f_handle.readlines()
     
     return server_list
+
+
+def list_servers(server_list, verbose=False):
+    """ Lists all the server from the server list.
+
+    Arguments:
+    server_list -- list[str], list of servers.
+
+    Returns:
+
+    """
+    print("Currently available servers:")
+
+    for i in range(len(server_list)):
+        server_object = Server(server_list[i])
+        print(" {}: {}".format(str(i+1), server_object.get_server_name()))
+
+        if verbose:
+            print("    Port: {}".format(server_object.get_port()))
+            print("    Options: {}".format(server_object.get_options()))
+
+        print("    Comment: {}".format(server_object.get_comment()))
+     
