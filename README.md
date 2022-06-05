@@ -1,60 +1,104 @@
-# Tools for common operations with remote servers
+# Remote server tools
 
-This project contains three scripts for common operations with remote server, namely:
-- Copying files to the remote server,
-- Downloading files from the remote server,
-- Connecting to the remote server.
+This project is a python based CLI for connecting to a remote server as well as uploading and downloading files or directories. 
 
 ## General information
 
-These scripts are to easily connect to, upload files to and download files from a remote server. They use either ssh or scp to connect the user to the server.
+The list of servers is stored locally in $HOME/.local/var
+The python scripts were written using Python v3.8.10
+The bash scripts were written using Bash v5.0.17(1)-release
 
-The used servers are stored in the servers file located in the $HOME/.local/var directory. Each line of the file corresponds to one server and is stored in the following fashion: user@host port options #comment.
-The options can be any option used with scp or ssh.
+## Required packages
+
+This list contains the names of the packages that are required to run the scripts. The scripts have been tested using the packages with the specified versions.
+
+   * scp v0.14.4
+   * paramiko v2.11.0
 
 ## Installation
 
-The installation process will create a file to store the available servers and move the scripts to $HOME/.local/bin
+The setup.sh script should be run to set everything up. The necessary packages will be installed if they are missing. The scripts will be moved to $HOME/.local/bin and a file to contain the list of servers will be created at $HOME/.local/var. The directories are created if they do not exist.
 
-To install enter the following commands:
+To setup enter the following commands:
 
     $ git clone git@github.com:mathiasroesler/server_tools.git
     $ cd server_tools
-    $ chmod +x install.sh
-    $ ./install.sh
+    $ chmod +x setup.sh
+    $ ./setup.sh
 
 ## Usage
 
-To be able to call the functions, make sure that $HOME/.local/bin is present in
+To be able to call the scripts, make sure that $HOME/.local/bin is present in
 your $PATH variable. Check the $PATH variable with the following command: 
+
     $ echo $PATH
 
 If the folder is not present in the list use the following command to add it:
+
     $ PATH = $PATH:$HOME/.local/bin 
 
 To make the changes permanent add the previous command at the end of the .bashrc
 file:
+
     $ echo PATH = $PATH:$HOME/.local/bin >> ~/.bashrc
 
-The commands will search for the specified server in the servers file. It is advised to use the line number associated with the desired server rather than typing the full name of the server. The latter option is also possible, however some option (such as the -d flag) require the line number method.
-For example, to connect to the first server stored in the file simply use the command
+###  Commands	
 
-    $ remote-connection 1
-    
-This command is similar to the follwing if the first line of the server file is user@host
+There are seven available commands. To list the available commands use one of the following:
 
-    $ remote-connection user@host
-    
-You can specify a port number to connect to with the -p option and the any other flags to be used with the -o option. The default port number is 22.
+    $ server --help or server -h
 
-For example this command will upload file1 to your home folder on the remote server user@host at the port 6748 in verbose mode and using the 3des-cbc encryption 
+* list, lists the available servers
+	* usage: server list [-h] [-v] [--path PATH]
+* add, adds a server to the list of available servers
+	* usage: server add [-h] [--path PATH]
+* remove,  removes a server from the list of available servers
+	* usage: server remove [-h] [--path PATH]
+* modify, modifies a server from the list of available servers
+	* usage: server modify [-h] [--path PATH]
+* connect, connects to a remote server.
+	* usage: server connect [-h] [-p PORT] [-o OPTIONS] [-P PATH] server
+* upload, uploads files or directories to a remote server
+	* usage: server upload [-h] [-t TARGET] [-r] [-p PORT] [-o OPTIONS] [-P PATH] server source
+* download, downloads files or directories from a remote server
+	* usage: server download [-h] [-t TARGET] [-r] [-p PORT] [-o OPTIONS] [-P PATH] server source
+	
+### Examples
 
-    $ upload -p 6748 -o "-vc 3des-cbc" user@host file1 ""
-    
-This would be equivalent to the following command if the third line in the .servers file is user@host 6748 -vc 3des-cbc
+Begin with adding a server to the list of servers with the add command:
 
-    $ upload 3 file1 ""
-    
-If you connect to a server that is not stored in the .servers file, you will be asked if you want to add it to the list. Alternatively, you can use the -a option to add a server to the file. 
+    $ server add
+	
+The script will prompt you for the required information. A user and host must be specified, the other parameters are optional. The default port value will be 22. 
 
-The -h options will show all of the available options, and the -l and -L options list the servers stored in the .servers file.
+You can then view the available servers with the list command:
+
+	$ server list
+	
+The -v flag will provide more information (port number and additional options) when printing servers on screen. 
+
+Connect to the server by using the numbering system: 
+
+	$ server connect 1 
+	
+This will connect to the first server in the list. If you want to change the port value that is associated with the first server, you can specify it with the port option:
+
+	$ server connect 1 --port 1234
+	
+You can also connect by providing a server name directly and specify a port number:
+
+	$ server connect user@host --port 1234
+
+If no port is provided, the default port number 22 will be used. 
+
+The upload and download commands operate in a similar fashion to the connect command. There is only one supplementary argument that must be provided: the path to the file(s) to upload. 
+
+	$ server upload 1 /path/to/files
+	
+To upload or download a directory recursively, use the --recursive flag
+
+	$ server download 1 /path/to/files --recursive
+
+Additional options can be added with the --options flag. Only options that do not require an argument can be used. The '-' symbol should not be placed before the options. 
+
+	$ server connect 1 --options vX
