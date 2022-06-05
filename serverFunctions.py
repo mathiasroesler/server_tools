@@ -215,14 +215,10 @@ class Server:
         Returns:
 
         """
-        if self.options != '':
-            arguments = ' '.join(["-p " + self.port, self.options])
-
-        else:
-            arguments = "-p " + self.port
+        port = "-p" + self.port
 
         try:
-            subprocess.run(["ssh", arguments, self.server_name])
+            subprocess.run(["ssh", port, self.options, self.server_name])
 
         except KeyboardInterrupt:
             sys.stderr.write("Connection to {}@{} canceled.\n".format(

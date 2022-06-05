@@ -6,6 +6,7 @@
 # Last modified: 06/22
 
 import os
+import sys
 import argparse
 import serverFunctions
 
@@ -75,7 +76,7 @@ if __name__ == "__main__":
 
     parser = argparse.ArgumentParser(prog="server", description=
             "Handles remote server operations.")
-    subparsers = parser.add_subparsers(title="available subcommands")
+    subparsers = parser.add_subparsers(title="available commands")
     
     # List subcommand parser
     list_parser = subparsers.add_parser("list", help="List available servers")
