@@ -128,7 +128,7 @@ if __name__ == "__main__":
             "path to file(s) to upload")
     upload_parser.add_argument("-t", "--target", type=str, default='.', help=
             "path to file(s) destination on the server")
-    upload_parser.add_argument("-r", "--recursive", action='store_false',
+    upload_parser.add_argument("-r", "--recursive", action='store_true',
             help="upload file(s) recursively")
     upload_parser.add_argument("-p", "--port", type=str, help="port number")
     upload_parser.add_argument("-o", "--options", type=str, default='', help=
@@ -146,7 +146,7 @@ if __name__ == "__main__":
             "path to file(s) to download")
     download_parser.add_argument("-t", "--target", type=str, default='.', help=
             "path to file(s) destination on the local machine")
-    download_parser.add_argument("-r", "--recursive", action='store_false',
+    download_parser.add_argument("-r", "--recursive", action='store_true',
             help="download file(s) recursively")
     download_parser.add_argument("-p", "--port", type=str, help="port number")
     download_parser.add_argument("-o", "--options", type=str, default='', help=
