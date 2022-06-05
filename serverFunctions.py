@@ -218,7 +218,7 @@ class Server:
         port = "-p" + self.port
 
         try:
-            subprocess.run(["ssh", port, self.options, self.server_name])
+            subprocess.run(["ssh", self.server_name, port, self.options])
 
         except KeyboardInterrupt:
             sys.stderr.write("Connection to {}@{} canceled.\n".format(
@@ -328,7 +328,7 @@ class Server:
                     exit(2)
 
                 except SCPException:
-                    sys.stderr.write("Error with source {}.\n".format(
+                    sys.stderr.write("Error with source {}\n".format(
                         file_path))
                     exit(3)
 
@@ -576,15 +576,23 @@ def connect_server(file_path, server_id, port, options):
 
         server_object.connect()
 
+    except IndexError:
+        # The server number is not valid
+        sys.stderr.write("Error: server number {} is not valid.\n".format(
+            server_id))
+        exit(1)
+
     except ValueError:
         # If the server_id is a server name
         split_server_id = server_id.split('@')
 
-        if len(server_id) <= 2:
+        if len(split_server_id) < 2:
             sys.stderr.write(
                     "Error: server {} could not be processed.\n".format(
                         server_id))
-            exit(1)
+            exit(2)
+
+        server_name = '@'.join([split_server_id[0], split_server_id[1]])
 
         if port == None:
             port = '22'
@@ -592,7 +600,7 @@ def connect_server(file_path, server_id, port, options):
         if options != '':
             options = '-' + options
 
-        server_elems = ' '.join([server_id,
+        server_elems = ' '.join([server_name,
                 port, 
                 options,
                 '#']) 
@@ -632,16 +640,22 @@ def upload_server(file_path, server_id, port, options, src_path, dest_path,
 
         server_object.upload(src_path, dest_path, recursive)
 
-    except ValueError:
-        server_id = server_id.split('@')
+    except IndexError:
+        # The server number is not valid
+        sys.stderr.write("Error: server number {} is not valid.\n".format(
+            server_id))
+        exit(1)
 
-        if len(server_id) <= 2:
+    except ValueError:
+        split_server_id = server_id.split('@')
+
+        if len(split_server_id) < 2:
             sys.stderr.write(
                     "Error: server {} could not be processed.\n".format(
                         server_id))
             exit(1)
 
-        server_name = '@'.join([server_id[0], server_id[1]])
+        server_name = '@'.join([split_server_id[0], split_server_id[1]])
 
         if port != None:
             port = 22
@@ -686,16 +700,22 @@ def download_server(file_path, server_id, port, options, src_path, dest_path,
 
         server_object.download(src_path, dest_path, recursive)
 
-    except ValueError:
-        server_id = server_id.split('@')
+    except IndexError:
+        # The server number is not valid
+        sys.stderr.write("Error: server number {} is not valid.\n".format(
+            server_id))
+        exit(1)
 
-        if len(server_id) <= 2:
+    except ValueError:
+        split_server_id = server_id.split('@')
+
+        if len(split_server_id) < 2:
             sys.stderr.write(
                     "Error: server {} could not be processed.\n".format(
                         server_id))
             exit(1)
 
-        server_name = '@'.join([server_id[0], server_id[1]])
+        server_name = '@'.join([split_server_id[0], split_server_id[1]])
 
         if port != None:
             port = 22
