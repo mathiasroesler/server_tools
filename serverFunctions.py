@@ -11,7 +11,7 @@ import sys
 import getpass
 import subprocess
 from scp import SCPClient, SCPException
-from paramiko import SSHClient
+from paramiko import SSHClient, ssh_exception
 
 
 ##################
@@ -221,16 +221,16 @@ class Server:
             subprocess.run(["ssh", self.server_name, port, self.options])
 
         except KeyboardInterrupt:
-            sys.stderr.write("Connection to {}@{} canceled.\n".format(
-                self.user, self.host))
+            sys.stderr.write("Connection to {} canceled.\n".format(
+                self.server_name))
             exit(1)
 
 
-    def upload(self, file_path, dest_path='.', recursive=False):
+    def upload(self, src_path, dest_path='.', recursive=False):
         """ Uploads the file(s) to the server.
 
         Arguments:
-        file_path -- str or list[str], path file or list of paths
+        src_path -- str or list[str], path file or list of paths
             of files to upload.
         dest_path -- str, path to file(s) destination,
             default value: '.'.
@@ -242,35 +242,39 @@ class Server:
         """
         with SSHClient() as ssh:
             ssh.load_system_host_keys()
-            password_prompt = "{}@{}'s password: ".format(
-                    self.user, self.host)
+            password_prompt = "{}'s password: ".format(
+                    self.server_name)
 
             try:
                 password = getpass.getpass(password_prompt)
 
+                ssh.connect(self.get_host(), 
+                        port=int(self.get_port()), 
+                        username=self.get_user(), 
+                        password=password)
+
             except KeyboardInterrupt:
-                sys.stderr.write("\nConnection to {}@{} canceled.\n".format(
-                    self.user, self.host))
+                sys.stderr.write("\nConnection to {} canceled.\n".format(
+                    self.server_name))
                 exit(1)
 
-            ssh.connect(self.get_host(), 
-                    port=int(self.get_port()), 
-                    username=self.get_user(), 
-                    password=password)
-
+            except ssh_exception.AuthenticationException:
+                sys.stderr.write("Authentification to {} failed.\n".format(
+                    self.server_name))
+                exit(1)
 
             with SCPClient(ssh.get_transport()) as scp:
                 try:
                     if recursive:
-                        scp.put(file_path, remote_path=dest_path, 
+                        scp.put(src_path, remote_path=dest_path, 
                                 recursive=recursive)
 
                     else:
-                        scp.put(file_path, remote_path=dest_path)
+                        scp.put(src_path, remote_path=dest_path)
 
                 except FileNotFoundError:
                     sys.stderr.write("{}: No such file or directory.\n".format(
-                        file_path))
+                        src_path))
                     exit(2)
 
                 except SCPException:
@@ -279,12 +283,11 @@ class Server:
                     exit(3)
                     
 
-
-    def download(self, file_path, dest_path='.', recursive=False):
+    def download(self, src_path, dest_path='.', recursive=False):
         """ Downloads the file(s) to the server.
 
         Arguments:
-        file_path -- str or list[str], path file or list of paths
+        src_path -- str or list[str], path file or list of paths
             of files to download.
         dest_path -- str, path to file(s) destination,
             default value: '.'.
@@ -296,31 +299,35 @@ class Server:
         """
         with SSHClient() as ssh:
             ssh.load_system_host_keys()
-            password_prompt = "{}@{}'s password: ".format(
-                    self.user, self.host)
+            password_prompt = "{}'s password: ".format(
+                    self.server_name)
 
             try:
                 password = getpass.getpass(password_prompt)
 
+                ssh.connect(self.get_host(), 
+                        port=int(self.get_port()), 
+                        username=self.get_user(), 
+                        password=password)
+
             except KeyboardInterrupt:
-                sys.stderr.write("\nConnection to {}@{} canceled.\n".format(
-                    self.user, self.host))
+                sys.stderr.write("\nConnection to {} canceled.\n".format(
+                    self.server_name))
                 exit(1)
 
-            ssh.connect(self.get_host(), 
-                    port=int(self.get_port()), 
-                    username=self.get_user(), 
-                    password=password)
-
+            except ssh_exception.AuthenticationException:
+                sys.stderr.write("Authentification to {} failed.\n".format(
+                    self.server_name))
+                exit(1)
 
             with SCPClient(ssh.get_transport()) as scp:
                 try:
                     if recursive:
-                        scp.get(file_path, local_path=dest_path, 
+                        scp.get(src_path, local_path=dest_path, 
                                 recursive=recursive)
 
                     else:
-                        scp.get(file_path, remote_path=dest_path)
+                        scp.get(src_path, local_path=dest_path)
 
                 except FileNotFoundError:
                     sys.stderr.write("{}: No such file or directory.\n".format(
@@ -329,7 +336,7 @@ class Server:
 
                 except SCPException:
                     sys.stderr.write("Error with source {}\n".format(
-                        file_path))
+                        src_path))
                     exit(3)
 
 
