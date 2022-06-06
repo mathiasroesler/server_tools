@@ -17,7 +17,7 @@ This list contains the names of the packages that are required to run the script
 
 ## Installation
 
-The setup.sh script should be run to set everything up. The necessary packages will be installed if they are missing. The scripts will be moved to $HOME/.local/bin and a file to contain the list of servers will be created at $HOME/.local/var. The directories are created if they do not exist.
+The setup.sh script should be run to set everything up. The necessary packages will be installed if they are missing. The scripts will be moved to $HOME/.local/bin and a file to contain the list of servers will be created at $HOME/.local/var. The completion script will be moved to the same directory as the server file. The directories are created if they do not exist.
 
 To setup enter the following commands:
 
@@ -26,22 +26,12 @@ To setup enter the following commands:
     $ chmod +x setup.sh
     $ ./setup.sh
 
+In order to call the scripts and use the autocompletion, the following commands are added to the .bashrc file:
+
+    $ source $HOME/.local/var/completion_script
+    $ PATH=$PATH:$HOME/.local/bin
+
 ## Usage
-
-To be able to call the scripts, make sure that $HOME/.local/bin is present in
-your $PATH variable. Check the $PATH variable with the following command: 
-
-    $ echo $PATH
-
-If the folder is not present in the list use the following command to add it:
-
-    $ PATH = $PATH:$HOME/.local/bin 
-
-To make the changes permanent add the previous command at the end of the .bashrc
-file:
-
-    $ echo PATH = $PATH:$HOME/.local/bin >> ~/.bashrc
-
 ###  Commands	
 
 There are seven available commands. To list the available commands use one of the following:

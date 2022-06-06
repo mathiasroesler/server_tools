@@ -50,4 +50,9 @@ if [[ ! -f $SERVER_FILE ]]; then
        	touch $SERVER_FILE	
 fi
 
+cp completion_script $SERVER_DEST
+
+echo "source $HOME/.local/var/completion_script" >> $HOME/.bashrc
+echo "PATH=$PATH:$HOME/.local/bin" >> $HOME/.bashrc
+
 echo "Setup done"
