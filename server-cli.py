@@ -124,7 +124,7 @@ if __name__ == "__main__":
             "Upload file(s) to a remote server")
     upload_parser.add_argument("server", type=str, help=
             "server number or server name (user@host)")
-    upload_parser.add_argument("source", type=str, help=
+    upload_parser.add_argument("source", type=str, nargs='+', help=
             "path to file(s) to upload")
     upload_parser.add_argument("-t", "--target", type=str, default='.', help=
             "path to file(s) destination on the server")
@@ -142,7 +142,7 @@ if __name__ == "__main__":
             "Download file(s) from a remote server")
     download_parser.add_argument("server", type=str, help=
             "server number or server name (user@host)")
-    download_parser.add_argument("source", type=str, help=
+    download_parser.add_argument("source", type=str, nargs='+', help=
             "path to file(s) to download")
     download_parser.add_argument("-t", "--target", type=str, default='.', help=
             "path to file(s) destination on the local machine")
