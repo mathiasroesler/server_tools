@@ -58,7 +58,7 @@ def parser_upload_server(args):
     See serverFunctions.upload_server for more details.
     """
     serverFunctions.upload_server(args.path, args.server, args.port,
-            args.options, args.source, args.target, args.recursive)
+            args.options, args.source, args.target, args.recursive, args.quiet)
 
 
 def parser_download_server(args):
@@ -67,7 +67,7 @@ def parser_download_server(args):
     See serverFunctions.download_server for more details.
     """
     serverFunctions.download_server(args.path, args.server, args.port,
-            args.options, args.source, args.target, args.recursive)
+            args.options, args.source, args.target, args.recursive, args.quiet)
 
 
 ## Main program ##
@@ -135,6 +135,8 @@ if __name__ == "__main__":
             "additional arguments for upload")
     upload_parser.add_argument("-P", "--path", type=str, default=server_path, 
             help="path to a server list file")
+    upload_parser.add_argument("-q", "--quiet", action='store_true', help=
+            "removes verbosity.")
     upload_parser.set_defaults(func=parser_upload_server) 
 
     # Download subcommand parser
@@ -153,6 +155,8 @@ if __name__ == "__main__":
             "additional arguments for download")
     download_parser.add_argument("-P", "--path", type=str, default=server_path, 
             help="path to a server list file")
+    download_parser.add_argument("-q", "--quiet", action='store_true', help=
+            "removes verbosity.")
     download_parser.set_defaults(func=parser_download_server) 
 
     args = parser.parse_args() 

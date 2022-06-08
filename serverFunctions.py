@@ -226,7 +226,7 @@ class Server:
             exit(1)
 
 
-    def upload(self, src_path, dest_path='.', recursive=False):
+    def upload(self, src_path, dest_path='.', recursive=False, quiet=False):
         """ Uploads the file(s) to the server.
 
         Arguments:
@@ -235,7 +235,9 @@ class Server:
         dest_path -- str, path to file(s) destination,
             default value: '.'.
         recursive -- boolean, uploads files recursively if True,
-            defaut value: False.
+            default value: False.
+        quiet -- boolean, prints progress if False,
+            default value: False.
 
         Returns:
 
@@ -263,27 +265,34 @@ class Server:
                     self.server_name))
                 exit(1)
 
-            with SCPClient(ssh.get_transport()) as scp:
-                try:
-                    if recursive:
-                        scp.put(src_path, remote_path=dest_path, 
-                                recursive=recursive)
+            if quiet:
+                scp = SCPClient(ssh.get_transport())
 
-                    else:
-                        scp.put(src_path, remote_path=dest_path)
+            else:
+                scp = SCPClient(ssh.get_transport(), progress=progress)
 
-                except FileNotFoundError:
-                    sys.stderr.write("{}: No such file or directory.\n".format(
-                        src_path))
-                    exit(2)
+            try:
+                if recursive:
+                    scp.put(src_path, remote_path=dest_path, 
+                            recursive=recursive)
 
-                except SCPException:
-                    sys.stderr.write("Error with destination {}.\n".format(
+                else:
+                    scp.put(src_path, remote_path=dest_path)
+
+            except FileNotFoundError:
+                sys.stderr.write("{}: No such file or directory.\n".format(
+                    src_path))
+                exit(2)
+
+            except SCPException:
+                sys.stderr.write("Error with destination {}.\n".format(
                         dest_path))
-                    exit(3)
+                exit(3)
+
+            print("\nUpload successful.")
                     
 
-    def download(self, src_path, dest_path='.', recursive=False):
+    def download(self, src_path, dest_path='.', recursive=False, quiet=False):
         """ Downloads the file(s) to the server.
 
         Arguments:
@@ -292,7 +301,9 @@ class Server:
         dest_path -- str, path to file(s) destination,
             default value: '.'.
         recursive -- boolean, downloads files recursively if True,
-            defaut value: False.
+            default value: False.
+        quiet -- boolean, prints progress if False,
+            default value: False.
 
         Returns:
 
@@ -320,24 +331,31 @@ class Server:
                     self.server_name))
                 exit(1)
 
-            with SCPClient(ssh.get_transport()) as scp:
-                try:
-                    if recursive:
-                        scp.get(src_path, local_path=dest_path, 
-                                recursive=recursive)
+            if quiet:
+                scp = SCPClient(ssh.get_transport())
 
-                    else:
-                        scp.get(src_path, local_path=dest_path)
+            else:
+                scp = SCPClient(ssh.get_transport(), progress=progress)
 
-                except FileNotFoundError:
-                    sys.stderr.write("{}: No such file or directory.\n".format(
-                        dest_path))
-                    exit(2)
+            try:
+                if recursive:
+                    scp.get(src_path, local_path=dest_path, 
+                            recursive=recursive)
 
-                except SCPException:
-                    sys.stderr.write("Error with source {}\n".format(
-                        src_path))
-                    exit(3)
+                else:
+                    scp.get(src_path, local_path=dest_path)
+
+            except FileNotFoundError:
+                sys.stderr.write("{}: No such file or directory.\n".format(
+                    dest_path))
+                exit(2)
+
+            except SCPException:
+                sys.stderr.write("Error with source {}\n".format(
+                    src_path))
+                exit(3)
+
+            print("\nDownload successful.")
 
 
 ######################
@@ -617,7 +635,7 @@ def connect_server(file_path, server_id, port, options):
 
 
 def upload_server(file_path, server_id, port, options, src_path, dest_path, 
-        recursive):
+        recursive, quiet):
     """ Uploads files to the selected server.
 
     Arguments:
@@ -629,6 +647,7 @@ def upload_server(file_path, server_id, port, options, src_path, dest_path,
     src_path -- str, path to the file(s) to upload.
     dest_path -- str, path to file(s) destination,
     recursive -- boolean, uploads file(s) recursively if True,
+    quiet -- boolean, prints progress if False,
 
     Returns:
 
@@ -645,7 +664,7 @@ def upload_server(file_path, server_id, port, options, src_path, dest_path,
         if options != None:
             server_object.set_options(options)
 
-        server_object.upload(src_path, dest_path, recursive)
+        server_object.upload(src_path, dest_path, recursive, quiet)
 
     except IndexError:
         # The server number is not valid
@@ -673,11 +692,11 @@ def upload_server(file_path, server_id, port, options, src_path, dest_path,
                 '#']) 
 
         server_object = Server(server_elems)
-        server_object.upload(src_path, dest_path, recursive)
+        server_object.upload(src_path, dest_path, recursive, quiet)
 
 
 def download_server(file_path, server_id, port, options, src_path, dest_path, 
-        recursive):
+        recursive, quiet):
     """ Uploads files to the selected server.
 
     Arguments:
@@ -688,7 +707,8 @@ def download_server(file_path, server_id, port, options, src_path, dest_path,
     options -- str, additional options.
     src_path -- str, path to the file(s) to download.
     dest_path -- str, path to file(s) destination,
-    recursive -- boolean, downloads file(s) recursively if True,
+    recursive -- boolean, downloads file(s) recursively if True.
+    quiet -- boolean, prints progress if False.
 
     Returns:
 
@@ -705,7 +725,7 @@ def download_server(file_path, server_id, port, options, src_path, dest_path,
         if options != None:
             server_object.set_options(options)
 
-        server_object.download(src_path, dest_path, recursive)
+        server_object.download(src_path, dest_path, recursive, quiet)
 
     except IndexError:
         # The server number is not valid
@@ -733,7 +753,7 @@ def download_server(file_path, server_id, port, options, src_path, dest_path,
                 '#']) 
 
         server_object = Server(server_elems)
-        server_object.download(src_path, dest_path, recursive)
+        server_object.download(src_path, dest_path, recursive, quiet)
 
 
 def ask_input(prompt, exit_char='q', modify=False):
@@ -771,3 +791,48 @@ def ask_input(prompt, exit_char='q', modify=False):
         exit(1)
 
     return answer
+
+suffixes = ['B', 'KB', 'MB', 'GB', 'TB', 'PB']
+def humansize(nbytes):
+    i = 0
+    while nbytes >= 1024 and i < len(suffixes)-1:
+        nbytes /= 1024.
+        i += 1
+    f = ('%.2f' % nbytes).rstrip('0').rstrip('.')
+    return '%s %s' % (f, suffixes[i])
+
+def progress(filename, size, sent):
+    """ Prints the progress for the upload or download functions.
+
+    Arguments:
+    filename -- byte, name of the file being transferred. 
+    size -- byte, size of the file being transferred. 
+    sent -- byte, number of bytes already transferred.
+
+    Returns:
+
+    """
+    i = 0
+    suffixes = ['B', 'KB', 'MB', 'GB', 'TB', 'PB']
+    print_size = size # Size that will be printed with correct unit.
+
+    while print_size >= 1024:
+        print_size /= 1024
+        i += 1
+        
+    sys.stdout.write("{}: {sent_B:.2f}/{total_B:.2f} {suffix} " \
+            "{percent:.2f}%\r".format(
+        filename.decode(), 
+        sent_B=sent/pow(10, 3*i), 
+        total_B=print_size,
+        suffix=suffixes[i],
+        percent=float(sent)/float(size)*100))
+
+    if float(sent) == float(size):
+        sys.stdout.write("{}: {sent_B:.2f}/{total_B:.2f} {suffix} " \
+                "{percent:.2f}%\n".format(
+            filename.decode(), 
+            sent_B=sent/pow(10, 3*i), 
+            total_B=print_size,
+            suffix=suffixes[i],
+            percent=float(sent)/float(size)*100))
