@@ -253,7 +253,8 @@ class Server:
                 ssh.connect(self.get_host(), 
                         port=int(self.get_port()), 
                         username=self.get_user(), 
-                        password=password)
+                        password=password,
+                        allow_agent=False)
 
             except KeyboardInterrupt:
                 sys.stderr.write("\nConnection to {} canceled.\n".format(
@@ -266,10 +267,10 @@ class Server:
                 exit(1)
 
             if quiet:
-                scp = SCPClient(ssh.get_transport())
+                scp = SCPClient(ssh.get_transport(), sanitize=lambda x: x)
 
             else:
-                scp = SCPClient(ssh.get_transport(), progress=progress)
+                scp = SCPClient(ssh.get_transport(), sanitize=lambda x: x, progress=progress)
 
             try:
                 if recursive:
@@ -319,7 +320,8 @@ class Server:
                 ssh.connect(self.get_host(), 
                         port=int(self.get_port()), 
                         username=self.get_user(), 
-                        password=password)
+                        password=password,
+                        allow_agent=False)
 
             except KeyboardInterrupt:
                 sys.stderr.write("\nConnection to {} canceled.\n".format(
@@ -332,10 +334,10 @@ class Server:
                 exit(1)
 
             if quiet:
-                scp = SCPClient(ssh.get_transport())
+                scp = SCPClient(ssh.get_transport(), sanitize=lambda x: x)
 
             else:
-                scp = SCPClient(ssh.get_transport(), progress=progress)
+                scp = SCPClient(ssh.get_transport(), sanitize=lambda x: x, progress=progress)
 
             try:
                 if recursive:
