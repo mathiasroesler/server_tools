@@ -160,4 +160,10 @@ if __name__ == "__main__":
     download_parser.set_defaults(func=parser_download_server) 
 
     args = parser.parse_args() 
-    args.func(args)
+
+    try:
+        args.func(args)
+
+    except AttributeError:
+        sys.stderr.write("Invalid usage\n")
+        sys.stderr.write("Run 'server --help' for more information\n")
