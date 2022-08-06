@@ -26,13 +26,10 @@ To setup enter the following commands:
     $ chmod +x setup.sh
     $ ./setup.sh
 
-In order to call the scripts and use the autocompletion, the following commands are added to the .bashrc file:
-
-    $ source $HOME/.local/var/completion_script
-    $ PATH=$PATH:$HOME/.local/bin
-
 ## Usage
 ###  Commands	
+
+usage: server [COMMAND] [OPTION] 
 
 There are seven available commands. To list the available commands use one of the following:
 
@@ -53,6 +50,12 @@ There are seven available commands. To list the available commands use one of th
 * download, downloads files or directories from a remote server
 	* usage: server download [-h] [-t TARGET] [-r] [-p PORT] [-o OPTIONS] [-P PATH] server source
 	
+
+For more information on a specific command run:
+
+    $ server [COMMAND] --help or server [COMMAND] -h
+
+
 ### Examples
 
 Begin with adding a server to the list of servers with the add command:
