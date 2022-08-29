@@ -1,4 +1,7 @@
-#/usr/bin/env bash
+#!/usr/bin/env bash
+
+SERVER_COMMANDS="connect command upload download add remove modify list"
+
 _server_completions()
 {
   if [ "${#COMP_WORDS[@]}" != "2" ]; then
@@ -6,7 +9,7 @@ _server_completions()
   fi
 
   # keep the suggestions in a local variable
-  local suggestions=($(compgen -W "connect upload download add remove modify list" -- "${COMP_WORDS[1]}"))
+  local suggestions=($(compgen -W "${SERVER_COMMANDS}"-- "${COMP_WORDS[1]}"))
 
   if [ "${#suggestions[@]}" == "1" ]; then
     # if there's only one match, we remove the command literal
