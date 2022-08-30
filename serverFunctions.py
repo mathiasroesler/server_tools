@@ -226,6 +226,26 @@ class Server:
             exit(1)
 
 
+    def exec_command(self, command):
+        """ Executes a command on a remote server via ssh.
+
+        Arguments:
+        command -- str, command to execute.
+
+        Returns:
+
+        """
+        port = "-p"+ self.port
+
+        try:
+            subprocess.run(["ssh", self.server_name, port, self.options, command])
+
+        except KeyboardInterrupt:
+            sys.stderr.write("Connection to {} canceled.\n".format(
+                self.server_name))
+            exit(1)
+
+
     def _establish_connection(self, ssh_obj):
         """ Establish a connection for scp.
 
