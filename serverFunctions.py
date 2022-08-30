@@ -430,7 +430,7 @@ def add_server(file_path):
     print(" A user and host must be provided.")
     print(" Press q to quit.")
     print(" Press enter to provide default values.")
-    print(" Default port: 22 | Default options: '' | Default comment: ''i\n")
+    print(" Default port: 22 | Default options: '' | Default comment: ''\n")
     
     user = ask_input("User")
     host = ask_input("Host")
@@ -785,6 +785,9 @@ def ask_input(prompt, exit_char='q', modify=False):
                     if answer == exit_char:
                         exit(0)
 
+            if answer == exit_char:
+                exit(0)
+
         elif answer == exit_char:
                 exit(0)
 
@@ -795,6 +798,7 @@ def ask_input(prompt, exit_char='q', modify=False):
     return answer
 
 suffixes = ['B', 'KB', 'MB', 'GB', 'TB', 'PB']
+
 def humansize(nbytes):
     i = 0
     while nbytes >= 1024 and i < len(suffixes)-1:
@@ -802,6 +806,7 @@ def humansize(nbytes):
         i += 1
     f = ('%.2f' % nbytes).rstrip('0').rstrip('.')
     return '%s %s' % (f, suffixes[i])
+
 
 def progress(filename, size, sent):
     """ Prints the progress for the upload or download functions.
