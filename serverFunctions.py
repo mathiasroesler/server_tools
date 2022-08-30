@@ -586,8 +586,8 @@ def modify_server(file_path):
         print("Server modified successfully.")
     
 
-def connect_server(file_path, server_id, port, options):
-    """ Connects to the selected server.
+def setup_server(file_path, server_id, port, options):
+    """ Setups up a Server object.
 
     Arguments:
     file_path -- str, path to file containing the servers.
@@ -597,6 +597,7 @@ def connect_server(file_path, server_id, port, options):
     options -- str, additional options.
 
     Returns:
+    server_object -- Server, created server using the inputed arguments.
 
     """
     server_list = get_servers(file_path)
@@ -644,7 +645,25 @@ def connect_server(file_path, server_id, port, options):
                 '#']) 
 
         server_object = Server(server_elems)
-        server_object.connect()
+
+    return server_object
+
+
+def connect_server(file_path, server_id, port, options):
+    """ Connects to the selected server.
+
+    Arguments:
+    file_path -- str, path to file containing the servers.
+    server_id -- str, server number in the list of available
+        servers or server name (user@host).
+    port -- str, port number.
+    options -- str, additional options.
+
+    Returns:
+
+    """
+    server_object = setup_server(file_path, server_id, port, options)
+    server_object.connect()
 
 
 def upload_server(file_path, server_id, port, options, src_path, dest_path, 
@@ -665,47 +684,8 @@ def upload_server(file_path, server_id, port, options, src_path, dest_path,
     Returns:
 
     """
-    server_list = get_servers(file_path)
-
-    try:
-        server_id = int(server_id)
-        server_object = Server(server_list[server_id-1])
-
-        if port != None:
-            server_object.set_port(port)
-
-        if options != None:
-            server_object.set_options(options)
-
-        server_object.upload(src_path, dest_path, recursive, quiet)
-
-    except IndexError:
-        # The server number is not valid
-        sys.stderr.write("Error: server number {} is not valid.\n".format(
-            server_id))
-        exit(1)
-
-    except ValueError:
-        split_server_id = server_id.split('@')
-
-        if len(split_server_id) < 2:
-            sys.stderr.write(
-                    "Error: server {} could not be processed.\n".format(
-                        server_id))
-            exit(1)
-
-        server_name = '@'.join([split_server_id[0], split_server_id[1]])
-
-        if port != None:
-            port = 22
-
-        server_elems = ' '.join([server_name,
-                port, 
-                options,
-                '#']) 
-
-        server_object = Server(server_elems)
-        server_object.upload(src_path, dest_path, recursive, quiet)
+    server_object = setup_server(file_path, server_id, port, options)
+    server_object.upload(src_path, dest_path, recursive, quiet)
 
 
 def download_server(file_path, server_id, port, options, src_path, dest_path, 
@@ -726,47 +706,8 @@ def download_server(file_path, server_id, port, options, src_path, dest_path,
     Returns:
 
     """
-    server_list = get_servers(file_path)
-
-    try:
-        server_id = int(server_id)
-        server_object = Server(server_list[server_id-1])
-
-        if port != None:
-            server_object.set_port(port)
-
-        if options != None:
-            server_object.set_options(options)
-
-        server_object.download(src_path, dest_path, recursive, quiet)
-
-    except IndexError:
-        # The server number is not valid
-        sys.stderr.write("Error: server number {} is not valid.\n".format(
-            server_id))
-        exit(1)
-
-    except ValueError:
-        split_server_id = server_id.split('@')
-
-        if len(split_server_id) < 2:
-            sys.stderr.write(
-                    "Error: server {} could not be processed.\n".format(
-                        server_id))
-            exit(1)
-
-        server_name = '@'.join([split_server_id[0], split_server_id[1]])
-
-        if port != None:
-            port = 22
-
-        server_elems = ' '.join([server_name,
-                port, 
-                options,
-                '#']) 
-
-        server_object = Server(server_elems)
-        server_object.download(src_path, dest_path, recursive, quiet)
+    server_object = setup_server(file_path, server_id, port, options)
+    server_object.download(src_path, dest_path, recursive, quiet)
 
 
 def ask_input(prompt, exit_char='q', modify=False):
