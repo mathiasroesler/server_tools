@@ -226,6 +226,39 @@ class Server:
             exit(1)
 
 
+    def _establish_connection(self, ssh_obj):
+        """ Establish a connection for scp.
+
+        Arguments:
+        ssh_obj -- paramiko.client.SSHClient, ssh connection object.
+
+        Return:
+
+        """
+        ssh_obj.load_system_host_keys()
+        password_prompt = "{}'s password: ".format(
+                self.server_name)
+
+        try:
+            password = getpass.getpass(password_prompt)
+
+            ssh_obj.connect(self.get_host(), 
+                    port=int(self.get_port()), 
+                    username=self.get_user(), 
+                    password=password,
+                    allow_agent=False)
+
+        except KeyboardInterrupt:
+            sys.stderr.write("\nConnection to {} canceled.\n".format(
+                self.server_name))
+            exit(1)
+
+        except ssh_obj_exception.AuthenticationException:
+            sys.stderr.write("Authentification to {} failed.\n".format(
+                self.server_name))
+            exit(1)
+
+
     def upload(self, src_path, dest_path='.', recursive=False, quiet=False):
         """ Uploads the file(s) to the server.
 
@@ -243,28 +276,7 @@ class Server:
 
         """
         with SSHClient() as ssh:
-            ssh.load_system_host_keys()
-            password_prompt = "{}'s password: ".format(
-                    self.server_name)
-
-            try:
-                password = getpass.getpass(password_prompt)
-
-                ssh.connect(self.get_host(), 
-                        port=int(self.get_port()), 
-                        username=self.get_user(), 
-                        password=password,
-                        allow_agent=False)
-
-            except KeyboardInterrupt:
-                sys.stderr.write("\nConnection to {} canceled.\n".format(
-                    self.server_name))
-                exit(1)
-
-            except ssh_exception.AuthenticationException:
-                sys.stderr.write("Authentification to {} failed.\n".format(
-                    self.server_name))
-                exit(1)
+            self._establish_connection(ssh)
 
             if quiet:
                 scp = SCPClient(ssh.get_transport(), sanitize=lambda x: x)
@@ -310,28 +322,7 @@ class Server:
 
         """
         with SSHClient() as ssh:
-            ssh.load_system_host_keys()
-            password_prompt = "{}'s password: ".format(
-                    self.server_name)
-
-            try:
-                password = getpass.getpass(password_prompt)
-
-                ssh.connect(self.get_host(), 
-                        port=int(self.get_port()), 
-                        username=self.get_user(), 
-                        password=password,
-                        allow_agent=False)
-
-            except KeyboardInterrupt:
-                sys.stderr.write("\nConnection to {} canceled.\n".format(
-                    self.server_name))
-                exit(1)
-
-            except ssh_exception.AuthenticationException:
-                sys.stderr.write("Authentification to {} failed.\n".format(
-                    self.server_name))
-                exit(1)
+            self._establish_connection(ssh)
 
             if quiet:
                 scp = SCPClient(ssh.get_transport(), sanitize=lambda x: x)
