@@ -44,11 +44,11 @@ def parser_modify_server(args):
 
 
 def parser_connect_server(args):
-    """ Calls connect_server() from the parser.
+    """ Calls command_server() from the parser with no command.
 
     See serverFunctions.connect_server for more details.
     """
-    serverFunctions.connect_server(args.path, args.server, args.port,
+    serverFunctions.command_server(args.path, args.server, args.port,
             args.options)
 
 
@@ -68,6 +68,16 @@ def parser_download_server(args):
     """
     serverFunctions.download_server(args.path, args.server, args.port,
             args.options, args.source, args.target, args.recursive, args.quiet)
+
+
+def parser_command_server(args):
+    """ Calls command_server() from the parser.
+
+    See serverFunctions.command_server for more details.
+    """
+    serverFunctions.command_server(args.path, args.server, args.port,
+            args.options, args.command)
+
 
 
 ## Main program ##
@@ -158,6 +168,20 @@ if __name__ == "__main__":
     download_parser.add_argument("-q", "--quiet", action='store_true', help=
             "removes verbosity.")
     download_parser.set_defaults(func=parser_download_server) 
+    
+    # Command subcommand paers
+    command_parser = subparsers.add_parser("command", help=
+            "Executes a command on the remote server")
+    command_parser.add_argument("server", type=str, help=
+            "server number or server name (user@host)")
+    command_parser.add_argument("command", type=str, nargs='+', help=
+            "command to execute")
+    command_parser.set_defaults(func=parser_command_server)
+    command_parser.add_argument("-p", "--port", type=str, help="port number")
+    command_parser.add_argument("-o", "--options", type=str, default='', help=
+            "additional arguments for upload")
+    command_parser.add_argument("-P", "--path", type=str, default=server_path, 
+            help="path to a server list file")
 
     args = parser.parse_args() 
 
