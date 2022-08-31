@@ -207,30 +207,12 @@ class Server:
 
 
     ## Methods ##
-    def connect(self):
-        """ Connects to the remote server via ssh.
-
-        Arguments:
-
-        Returns:
-
-        """
-        port = "-p" + self.port
-
-        try:
-            subprocess.run(["ssh", self.server_name, port, self.options])
-
-        except KeyboardInterrupt:
-            sys.stderr.write("Connection to {} canceled.\n".format(
-                self.server_name))
-            exit(1)
-
-
-    def exec_command(self, command):
+    def exec_command(self, command=""):
         """ Executes a command on a remote server via ssh.
+        If not command is given an interactive shell is opened.
 
         Arguments:
-        command -- str, command to execute.
+        command -- str, command to execute, default value ""
 
         Returns:
 
@@ -238,7 +220,11 @@ class Server:
         port = "-p"+ self.port
 
         try:
-            subprocess.run(["ssh", self.server_name, port, self.options, command])
+            if command == "":
+                subprocess.run(["ssh", self.server_name, port, self.options])
+
+            else:
+                subprocess.run(["ssh", self.server_name, port, self.options, command])
 
         except KeyboardInterrupt:
             sys.stderr.write("Connection to {} canceled.\n".format(
@@ -613,7 +599,7 @@ def setup_server(file_path, server_id, port, options):
         if options != '':
             server_object.set_options('-'+options)
 
-        server_object.connect()
+        server_object.exec_command()
 
     except IndexError:
         # The server number is not valid
@@ -649,8 +635,9 @@ def setup_server(file_path, server_id, port, options):
     return server_object
 
 
-def connect_server(file_path, server_id, port, options):
-    """ Connects to the selected server.
+def command_server(file_path, server_id, port, options, command=""):
+    """ Sends a command to be run on the selected server.
+    If the command is not provided a shell is returned.
 
     Arguments:
     file_path -- str, path to file containing the servers.
@@ -658,12 +645,13 @@ def connect_server(file_path, server_id, port, options):
         servers or server name (user@host).
     port -- str, port number.
     options -- str, additional options.
+    command -- str, command to send to the server, default value "".
 
     Returns:
 
     """
     server_object = setup_server(file_path, server_id, port, options)
-    server_object.connect()
+    server_object.exec_command(command)
 
 
 def upload_server(file_path, server_id, port, options, src_path, dest_path, 
