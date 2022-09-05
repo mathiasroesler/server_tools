@@ -783,3 +783,41 @@ def progress(filename, size, sent):
             total_B=print_size,
             suffix=suffixes[i],
             percent=float(sent)/float(size)*100))
+
+
+def clean_options(options):
+    """ Fuses the - symbol and the following option to create a flag.
+
+    The function cannot handle long options that begin with --
+
+    Arguments:
+    options -- list[str], list of inputed options.
+
+    Returns:
+    cleaned_options -- list[str], list of cleaned options.
+
+    """
+    clean_options = []
+    skip = False
+
+    for i in range(len(options)):
+        opt = options[i]
+
+        if skip:
+            # Skip iteration after a -
+            skip = False
+            continue
+
+        if opt == '-':
+            # Add next element if -
+            try:
+                opt = opt + options[i+1]
+                skip = True
+
+            except IndexError:
+                sys.stderr.write("Error: invalid options\n")
+                exit(1)
+
+        clean_options.append(opt)
+
+    return clean_options

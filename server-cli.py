@@ -48,6 +48,7 @@ def parser_connect_server(args):
 
     See serverFunctions.connect_server for more details.
     """
+    args.options = serverFunctions.clean_options(args.options)
     serverFunctions.command_server(args.path, args.server, args.port,
             args.options)
 
@@ -57,6 +58,7 @@ def parser_upload_server(args):
 
     See serverFunctions.upload_server for more details.
     """
+    args.options = serverFunctions.clean_options(args.options)
     serverFunctions.upload_server(args.path, args.server, args.port,
             args.options, args.source, args.target, args.recursive, args.quiet)
 
@@ -66,6 +68,7 @@ def parser_download_server(args):
 
     See serverFunctions.download_server for more details.
     """
+    args.options = serverFunctions.clean_options(args.options)
     serverFunctions.download_server(args.path, args.server, args.port,
             args.options, args.source, args.target, args.recursive, args.quiet)
 
@@ -75,6 +78,7 @@ def parser_command_server(args):
 
     See serverFunctions.command_server for more details.
     """
+    args.options = serverFunctions.clean_options(args.options)
     serverFunctions.command_server(args.path, args.server, args.port,
             args.options, args.command)
 
