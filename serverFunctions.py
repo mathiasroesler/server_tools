@@ -290,7 +290,8 @@ class Server:
                 scp = SCPClient(ssh.get_transport(), sanitize=lambda x: x)
 
             else:
-                scp = SCPClient(ssh.get_transport(), sanitize=lambda x: x, progress=progress)
+                scp = SCPClient(ssh.get_transport(), sanitize=lambda x: x, 
+                        progress=progress)
 
             try:
                 if recursive:
@@ -336,7 +337,8 @@ class Server:
                 scp = SCPClient(ssh.get_transport(), sanitize=lambda x: x)
 
             else:
-                scp = SCPClient(ssh.get_transport(), sanitize=lambda x: x, progress=progress)
+                scp = SCPClient(ssh.get_transport(), sanitize=lambda x: x,
+                        progress=progress)
 
             try:
                 if recursive:
