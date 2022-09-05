@@ -124,7 +124,7 @@ if __name__ == "__main__":
             "server number or server name (user@host)")
     connect_parser.add_argument("-p", "--port", type=str, help="port number")
     connect_parser.add_argument("-o", "--options", type=str, default='', help=
-            "additional arguments for connection")
+            "additional arguments for connection", nargs='*')
     connect_parser.add_argument("-P", "--path", type=str, default=server_path,
             help="path to a server list file")
     connect_parser.set_defaults(func=parser_connect_server) 
@@ -142,7 +142,7 @@ if __name__ == "__main__":
             help="upload file(s) recursively")
     upload_parser.add_argument("-p", "--port", type=str, help="port number")
     upload_parser.add_argument("-o", "--options", type=str, default='', help=
-            "additional arguments for upload")
+            "additional arguments for upload", nargs='*')
     upload_parser.add_argument("-P", "--path", type=str, default=server_path, 
             help="path to a server list file")
     upload_parser.add_argument("-q", "--quiet", action='store_true', help=
@@ -162,7 +162,8 @@ if __name__ == "__main__":
             help="download file(s) recursively")
     download_parser.add_argument("-p", "--port", type=str, help="port number")
     download_parser.add_argument("-o", "--options", type=str, default='', help=
-            "additional arguments for download")
+            "additional arguments for download", nargs='*')
+    
     download_parser.add_argument("-P", "--path", type=str, default=server_path, 
             help="path to a server list file")
     download_parser.add_argument("-q", "--quiet", action='store_true', help=
@@ -179,7 +180,7 @@ if __name__ == "__main__":
     command_parser.set_defaults(func=parser_command_server)
     command_parser.add_argument("-p", "--port", type=str, help="port number")
     command_parser.add_argument("-o", "--options", type=str, default='', help=
-            "additional arguments for upload")
+            "additional arguments for upload", nargs='*')
     command_parser.add_argument("-P", "--path", type=str, default=server_path, 
             help="path to a server list file")
 
