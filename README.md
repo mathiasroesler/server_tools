@@ -44,11 +44,13 @@ There are seven available commands. To list the available commands use one of th
 * modify, modifies a server from the list of available servers
 	* usage: server modify [-h] [--path PATH]
 * connect, connects to a remote server.
-	* usage: server connect [-h] [-p PORT] [-o OPTIONS] [-P PATH] server
+	* usage: server connect [-h] [-p PORT] [-o [OPTIONS [OPTIONS ...]]] [-P PATH] server
+* command, sends a command to a remote server.
+	* usage: server command [-h] [-p PORT] [-o [OPTIONS [OPTIONS ...]]] [-O [O [O ...]]] [-P PATH] server command
 * upload, uploads files or directories to a remote server
-	* usage: server upload [-h] [-t TARGET] [-r] [-p PORT] [-o OPTIONS] [-P PATH] server source
+	* usage: server upload [-h] [-t TARGET] [-r] [-p PORT] [-o [OPTIONS [OPTIONS ...]]] [-P PATH] server source
 * download, downloads files or directories from a remote server
-	* usage: server download [-h] [-t TARGET] [-r] [-p PORT] [-o OPTIONS] [-P PATH] server source
+	* usage: server download [-h] [-t TARGET] [-r] [-p PORT] [-o [OPTIONS [OPTIONS ...]]] [-P PATH] server source
 	
 
 For more information on a specific command run:
@@ -92,6 +94,6 @@ To upload or download a directory recursively, use the --recursive flag
 
 	$ server download 1 /path/to/files --recursive
 
-Additional options can be added with the --options flag. Only options that do not require an argument can be used. The '-' symbol should not be placed before the options. 
+Additional options can be added with the --options flag. The '-' symbol should be preceeded by a backslash '\' and followed by a space. The options flags do not handle long arguments that begin with '--'
 
-	$ server connect 1 --options vX
+	$ server connect 1 --options \- vX
