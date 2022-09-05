@@ -79,8 +79,9 @@ def parser_command_server(args):
     See serverFunctions.command_server for more details.
     """
     args.options = serverFunctions.clean_options(args.options)
+    args.O = serverFunctions.clean_options(args.O)
     serverFunctions.command_server(args.path, args.server, args.port,
-            args.options, args.command)
+            args.options, args.command, args.O)
 
 
 
@@ -184,7 +185,9 @@ if __name__ == "__main__":
     command_parser.set_defaults(func=parser_command_server)
     command_parser.add_argument("-p", "--port", type=str, help="port number")
     command_parser.add_argument("-o", "--options", type=str, default='', help=
-            "additional arguments for upload", nargs='*')
+            "additional arguments for connection", nargs='*')
+    command_parser.add_argument("-O", type=str, default='', nargs='*', help=
+            "additional arguments for the command")
     command_parser.add_argument("-P", "--path", type=str, default=server_path, 
             help="path to a server list file")
 

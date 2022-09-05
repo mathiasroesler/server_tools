@@ -207,12 +207,13 @@ class Server:
 
 
     ## Methods ##
-    def exec_command(self, command=""):
+    def exec_command(self, command="", command_options=""):
         """ Executes a command on a remote server via ssh.
         If not command is given an interactive shell is opened.
 
         Arguments:
-        command -- str, command to execute, default value ""
+        command -- str, command to execute, default value "".
+        command_options -- str, options for the command, default value "".
 
         Returns:
 
@@ -224,7 +225,8 @@ class Server:
                 subprocess.run(["ssh", self.server_name, port, self.options])
 
             else:
-                subprocess.run(["ssh", self.server_name, port, self.options, command])
+                subprocess.run(["ssh", self.server_name, port, self.options,
+                    command, command_options])
 
         except KeyboardInterrupt:
             sys.stderr.write("Connection to {} canceled.\n".format(
@@ -504,7 +506,6 @@ def remove_server(file_path):
 def modify_server(file_path):
     """ Modifies a server from the list of servers.
 
-    Arguments:
     file_path -- str, path to file containing the servers.
 
     Returns:
@@ -599,8 +600,6 @@ def setup_server(file_path, server_id, port, options):
         if options != '':
             server_object.set_options(' '.join(options))
 
-        server_object.exec_command()
-
     except IndexError:
         # The server number is not valid
         sys.stderr.write("Error: server number {} is not valid.\n".format(
@@ -623,7 +622,7 @@ def setup_server(file_path, server_id, port, options):
             port = '22'
 
         if options != '':
-            options = '-' + options
+            options = ' '.join(options)
 
         server_elems = ' '.join([server_name,
                 port, 
@@ -635,7 +634,8 @@ def setup_server(file_path, server_id, port, options):
     return server_object
 
 
-def command_server(file_path, server_id, port, options, command=""):
+def command_server(file_path, server_id, port, options, command="",
+        command_options=""):
     """ Sends a command to be run on the selected server.
     If the command is not provided a shell is returned.
 
@@ -644,14 +644,16 @@ def command_server(file_path, server_id, port, options, command=""):
     server_id -- str, server number in the list of available
         servers or server name (user@host).
     port -- str, port number.
-    options -- str, additional options.
+    options -- list[str], additional options for the server.
     command -- str, command to send to the server, default value "".
+    command_options -- list[str], options for the command, 
+        default value "".
 
     Returns:
 
     """
     server_object = setup_server(file_path, server_id, port, options)
-    server_object.exec_command(command)
+    server_object.exec_command(command, ' '.join(command_options))
 
 
 def upload_server(file_path, server_id, port, options, src_path, dest_path, 
