@@ -179,7 +179,7 @@ if __name__ == "__main__":
             "Executes a command on the remote server")
     command_parser.add_argument("server", type=str, help=
             "server number or server name (user@host)")
-    command_parser.add_argument("command", type=str, nargs='+', help=
+    command_parser.add_argument("command", type=str, help=
             "command to execute")
     command_parser.set_defaults(func=parser_command_server)
     command_parser.add_argument("-p", "--port", type=str, help="port number")
