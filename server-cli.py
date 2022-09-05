@@ -181,7 +181,7 @@ if __name__ == "__main__":
     command_parser.add_argument("server", type=str, help=
             "server number or server name (user@host)")
     command_parser.add_argument("command", type=str, help=
-            "command to execute")
+            "command to execute", nargs='+')
     command_parser.set_defaults(func=parser_command_server)
     command_parser.add_argument("-p", "--port", type=str, help="port number")
     command_parser.add_argument("-o", "--options", type=str, default='', help=
