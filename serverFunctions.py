@@ -647,7 +647,7 @@ def command_server(file_path, server_id, port, options, command="",
         servers or server name (user@host).
     port -- str, port number.
     options -- list[str], additional options for the server.
-    command -- str, command to send to the server, default value "".
+    command -- list[str], command to send to the server, default value "".
     command_options -- list[str], options for the command, 
         default value "".
 
@@ -655,7 +655,7 @@ def command_server(file_path, server_id, port, options, command="",
 
     """
     server_object = setup_server(file_path, server_id, port, options)
-    server_object.exec_command(command, ' '.join(command_options))
+    server_object.exec_command(' '.join(command), ' '.join(command_options))
 
 
 def upload_server(file_path, server_id, port, options, src_path, dest_path, 
