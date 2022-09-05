@@ -44,11 +44,12 @@ def parser_modify_server(args):
 
 
 def parser_connect_server(args):
-    """ Calls connect_server() from the parser.
+    """ Calls command_server() from the parser with no command.
 
     See serverFunctions.connect_server for more details.
     """
-    serverFunctions.connect_server(args.path, args.server, args.port,
+    args.options = serverFunctions.clean_options(args.options)
+    serverFunctions.command_server(args.path, args.server, args.port,
             args.options)
 
 
@@ -57,6 +58,7 @@ def parser_upload_server(args):
 
     See serverFunctions.upload_server for more details.
     """
+    args.options = serverFunctions.clean_options(args.options)
     serverFunctions.upload_server(args.path, args.server, args.port,
             args.options, args.source, args.target, args.recursive, args.quiet)
 
@@ -66,8 +68,21 @@ def parser_download_server(args):
 
     See serverFunctions.download_server for more details.
     """
+    args.options = serverFunctions.clean_options(args.options)
     serverFunctions.download_server(args.path, args.server, args.port,
             args.options, args.source, args.target, args.recursive, args.quiet)
+
+
+def parser_command_server(args):
+    """ Calls command_server() from the parser.
+
+    See serverFunctions.command_server for more details.
+    """
+    args.options = serverFunctions.clean_options(args.options)
+    args.O = serverFunctions.clean_options(args.O)
+    serverFunctions.command_server(args.path, args.server, args.port,
+            args.options, args.command, args.O)
+
 
 
 ## Main program ##
@@ -114,7 +129,7 @@ if __name__ == "__main__":
             "server number or server name (user@host)")
     connect_parser.add_argument("-p", "--port", type=str, help="port number")
     connect_parser.add_argument("-o", "--options", type=str, default='', help=
-            "additional arguments for connection")
+            "additional arguments for connection", nargs='*')
     connect_parser.add_argument("-P", "--path", type=str, default=server_path,
             help="path to a server list file")
     connect_parser.set_defaults(func=parser_connect_server) 
@@ -132,7 +147,7 @@ if __name__ == "__main__":
             help="upload file(s) recursively")
     upload_parser.add_argument("-p", "--port", type=str, help="port number")
     upload_parser.add_argument("-o", "--options", type=str, default='', help=
-            "additional arguments for upload")
+            "additional arguments for upload", nargs='*')
     upload_parser.add_argument("-P", "--path", type=str, default=server_path, 
             help="path to a server list file")
     upload_parser.add_argument("-q", "--quiet", action='store_true', help=
@@ -152,12 +167,29 @@ if __name__ == "__main__":
             help="download file(s) recursively")
     download_parser.add_argument("-p", "--port", type=str, help="port number")
     download_parser.add_argument("-o", "--options", type=str, default='', help=
-            "additional arguments for download")
+            "additional arguments for download", nargs='*')
+    
     download_parser.add_argument("-P", "--path", type=str, default=server_path, 
             help="path to a server list file")
     download_parser.add_argument("-q", "--quiet", action='store_true', help=
             "removes verbosity.")
     download_parser.set_defaults(func=parser_download_server) 
+    
+    # Command subcommand paers
+    command_parser = subparsers.add_parser("command", help=
+            "Executes a command on the remote server")
+    command_parser.add_argument("server", type=str, help=
+            "server number or server name (user@host)")
+    command_parser.add_argument("command", type=str, help=
+            "command to execute", nargs='+')
+    command_parser.set_defaults(func=parser_command_server)
+    command_parser.add_argument("-p", "--port", type=str, help="port number")
+    command_parser.add_argument("-o", "--options", type=str, default='', help=
+            "additional arguments for connection", nargs='*')
+    command_parser.add_argument("-O", type=str, default='', nargs='*', help=
+            "additional arguments for the command")
+    command_parser.add_argument("-P", "--path", type=str, default=server_path, 
+            help="path to a server list file")
 
     args = parser.parse_args() 
 

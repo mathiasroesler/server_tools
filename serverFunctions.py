@@ -207,21 +207,62 @@ class Server:
 
 
     ## Methods ##
-    def connect(self):
-        """ Connects to the remote server via ssh.
+    def exec_command(self, command="", command_options=""):
+        """ Executes a command on a remote server via ssh.
+        If not command is given an interactive shell is opened.
 
         Arguments:
+        command -- str, command to execute, default value "".
+        command_options -- str, options for the command, default value "".
 
         Returns:
 
         """
-        port = "-p" + self.port
+        port = "-p"+ self.port
 
         try:
-            subprocess.run(["ssh", self.server_name, port, self.options])
+            if command == "":
+                subprocess.run(["ssh", self.server_name, port, self.options])
+
+            else:
+                subprocess.run(["ssh", self.server_name, port, self.options,
+                    command, command_options])
 
         except KeyboardInterrupt:
             sys.stderr.write("Connection to {} canceled.\n".format(
+                self.server_name))
+            exit(1)
+
+
+    def _establish_connection(self, ssh_obj):
+        """ Establish a connection for scp.
+
+        Arguments:
+        ssh_obj -- paramiko.client.SSHClient, ssh connection object.
+
+        Return:
+
+        """
+        ssh_obj.load_system_host_keys()
+        password_prompt = "{}'s password: ".format(
+                self.server_name)
+
+        try:
+            password = getpass.getpass(password_prompt)
+
+            ssh_obj.connect(self.get_host(), 
+                    port=int(self.get_port()), 
+                    username=self.get_user(), 
+                    password=password,
+                    allow_agent=False)
+
+        except KeyboardInterrupt:
+            sys.stderr.write("\nConnection to {} canceled.\n".format(
+                self.server_name))
+            exit(1)
+
+        except ssh_obj_exception.AuthenticationException:
+            sys.stderr.write("Authentification to {} failed.\n".format(
                 self.server_name))
             exit(1)
 
@@ -243,34 +284,14 @@ class Server:
 
         """
         with SSHClient() as ssh:
-            ssh.load_system_host_keys()
-            password_prompt = "{}'s password: ".format(
-                    self.server_name)
-
-            try:
-                password = getpass.getpass(password_prompt)
-
-                ssh.connect(self.get_host(), 
-                        port=int(self.get_port()), 
-                        username=self.get_user(), 
-                        password=password,
-                        allow_agent=False)
-
-            except KeyboardInterrupt:
-                sys.stderr.write("\nConnection to {} canceled.\n".format(
-                    self.server_name))
-                exit(1)
-
-            except ssh_exception.AuthenticationException:
-                sys.stderr.write("Authentification to {} failed.\n".format(
-                    self.server_name))
-                exit(1)
+            self._establish_connection(ssh)
 
             if quiet:
                 scp = SCPClient(ssh.get_transport(), sanitize=lambda x: x)
 
             else:
-                scp = SCPClient(ssh.get_transport(), sanitize=lambda x: x, progress=progress)
+                scp = SCPClient(ssh.get_transport(), sanitize=lambda x: x, 
+                        progress=progress)
 
             try:
                 if recursive:
@@ -310,34 +331,14 @@ class Server:
 
         """
         with SSHClient() as ssh:
-            ssh.load_system_host_keys()
-            password_prompt = "{}'s password: ".format(
-                    self.server_name)
-
-            try:
-                password = getpass.getpass(password_prompt)
-
-                ssh.connect(self.get_host(), 
-                        port=int(self.get_port()), 
-                        username=self.get_user(), 
-                        password=password,
-                        allow_agent=False)
-
-            except KeyboardInterrupt:
-                sys.stderr.write("\nConnection to {} canceled.\n".format(
-                    self.server_name))
-                exit(1)
-
-            except ssh_exception.AuthenticationException:
-                sys.stderr.write("Authentification to {} failed.\n".format(
-                    self.server_name))
-                exit(1)
+            self._establish_connection(ssh)
 
             if quiet:
                 scp = SCPClient(ssh.get_transport(), sanitize=lambda x: x)
 
             else:
-                scp = SCPClient(ssh.get_transport(), sanitize=lambda x: x, progress=progress)
+                scp = SCPClient(ssh.get_transport(), sanitize=lambda x: x,
+                        progress=progress)
 
             try:
                 if recursive:
@@ -430,7 +431,7 @@ def add_server(file_path):
     print(" A user and host must be provided.")
     print(" Press q to quit.")
     print(" Press enter to provide default values.")
-    print(" Default port: 22 | Default options: '' | Default comment: ''i\n")
+    print(" Default port: 22 | Default options: '' | Default comment: ''\n")
     
     user = ask_input("User")
     host = ask_input("Host")
@@ -507,7 +508,6 @@ def remove_server(file_path):
 def modify_server(file_path):
     """ Modifies a server from the list of servers.
 
-    Arguments:
     file_path -- str, path to file containing the servers.
 
     Returns:
@@ -575,8 +575,8 @@ def modify_server(file_path):
         print("Server modified successfully.")
     
 
-def connect_server(file_path, server_id, port, options):
-    """ Connects to the selected server.
+def setup_server(file_path, server_id, port, options):
+    """ Setups up a Server object.
 
     Arguments:
     file_path -- str, path to file containing the servers.
@@ -586,6 +586,7 @@ def connect_server(file_path, server_id, port, options):
     options -- str, additional options.
 
     Returns:
+    server_object -- Server, created server using the inputed arguments.
 
     """
     server_list = get_servers(file_path)
@@ -599,9 +600,7 @@ def connect_server(file_path, server_id, port, options):
             server_object.set_port(port)
 
         if options != '':
-            server_object.set_options('-'+options)
-
-        server_object.connect()
+            server_object.set_options(' '.join(options))
 
     except IndexError:
         # The server number is not valid
@@ -625,7 +624,7 @@ def connect_server(file_path, server_id, port, options):
             port = '22'
 
         if options != '':
-            options = '-' + options
+            options = ' '.join(options)
 
         server_elems = ' '.join([server_name,
                 port, 
@@ -633,7 +632,30 @@ def connect_server(file_path, server_id, port, options):
                 '#']) 
 
         server_object = Server(server_elems)
-        server_object.connect()
+
+    return server_object
+
+
+def command_server(file_path, server_id, port, options, command="",
+        command_options=""):
+    """ Sends a command to be run on the selected server.
+    If the command is not provided a shell is returned.
+
+    Arguments:
+    file_path -- str, path to file containing the servers.
+    server_id -- str, server number in the list of available
+        servers or server name (user@host).
+    port -- str, port number.
+    options -- list[str], additional options for the server.
+    command -- list[str], command to send to the server, default value "".
+    command_options -- list[str], options for the command, 
+        default value "".
+
+    Returns:
+
+    """
+    server_object = setup_server(file_path, server_id, port, options)
+    server_object.exec_command(' '.join(command), ' '.join(command_options))
 
 
 def upload_server(file_path, server_id, port, options, src_path, dest_path, 
@@ -654,47 +676,8 @@ def upload_server(file_path, server_id, port, options, src_path, dest_path,
     Returns:
 
     """
-    server_list = get_servers(file_path)
-
-    try:
-        server_id = int(server_id)
-        server_object = Server(server_list[server_id-1])
-
-        if port != None:
-            server_object.set_port(port)
-
-        if options != None:
-            server_object.set_options(options)
-
-        server_object.upload(src_path, dest_path, recursive, quiet)
-
-    except IndexError:
-        # The server number is not valid
-        sys.stderr.write("Error: server number {} is not valid.\n".format(
-            server_id))
-        exit(1)
-
-    except ValueError:
-        split_server_id = server_id.split('@')
-
-        if len(split_server_id) < 2:
-            sys.stderr.write(
-                    "Error: server {} could not be processed.\n".format(
-                        server_id))
-            exit(1)
-
-        server_name = '@'.join([split_server_id[0], split_server_id[1]])
-
-        if port != None:
-            port = 22
-
-        server_elems = ' '.join([server_name,
-                port, 
-                options,
-                '#']) 
-
-        server_object = Server(server_elems)
-        server_object.upload(src_path, dest_path, recursive, quiet)
+    server_object = setup_server(file_path, server_id, port, options)
+    server_object.upload(src_path, dest_path, recursive, quiet)
 
 
 def download_server(file_path, server_id, port, options, src_path, dest_path, 
@@ -715,47 +698,8 @@ def download_server(file_path, server_id, port, options, src_path, dest_path,
     Returns:
 
     """
-    server_list = get_servers(file_path)
-
-    try:
-        server_id = int(server_id)
-        server_object = Server(server_list[server_id-1])
-
-        if port != None:
-            server_object.set_port(port)
-
-        if options != None:
-            server_object.set_options(options)
-
-        server_object.download(src_path, dest_path, recursive, quiet)
-
-    except IndexError:
-        # The server number is not valid
-        sys.stderr.write("Error: server number {} is not valid.\n".format(
-            server_id))
-        exit(1)
-
-    except ValueError:
-        split_server_id = server_id.split('@')
-
-        if len(split_server_id) < 2:
-            sys.stderr.write(
-                    "Error: server {} could not be processed.\n".format(
-                        server_id))
-            exit(1)
-
-        server_name = '@'.join([split_server_id[0], split_server_id[1]])
-
-        if port != None:
-            port = 22
-
-        server_elems = ' '.join([server_name,
-                port, 
-                options,
-                '#']) 
-
-        server_object = Server(server_elems)
-        server_object.download(src_path, dest_path, recursive, quiet)
+    server_object = setup_server(file_path, server_id, port, options)
+    server_object.download(src_path, dest_path, recursive, quiet)
 
 
 def ask_input(prompt, exit_char='q', modify=False):
@@ -785,6 +729,9 @@ def ask_input(prompt, exit_char='q', modify=False):
                     if answer == exit_char:
                         exit(0)
 
+            if answer == exit_char:
+                exit(0)
+
         elif answer == exit_char:
                 exit(0)
 
@@ -795,6 +742,7 @@ def ask_input(prompt, exit_char='q', modify=False):
     return answer
 
 suffixes = ['B', 'KB', 'MB', 'GB', 'TB', 'PB']
+
 def humansize(nbytes):
     i = 0
     while nbytes >= 1024 and i < len(suffixes)-1:
@@ -802,6 +750,7 @@ def humansize(nbytes):
         i += 1
     f = ('%.2f' % nbytes).rstrip('0').rstrip('.')
     return '%s %s' % (f, suffixes[i])
+
 
 def progress(filename, size, sent):
     """ Prints the progress for the upload or download functions.
@@ -838,3 +787,41 @@ def progress(filename, size, sent):
             total_B=print_size,
             suffix=suffixes[i],
             percent=float(sent)/float(size)*100))
+
+
+def clean_options(options):
+    """ Fuses the - symbol and the following option to create a flag.
+
+    The function cannot handle long options that begin with --
+
+    Arguments:
+    options -- list[str], list of inputed options.
+
+    Returns:
+    cleaned_options -- list[str], list of cleaned options.
+
+    """
+    clean_options = []
+    skip = False
+
+    for i in range(len(options)):
+        opt = options[i]
+
+        if skip:
+            # Skip iteration after a -
+            skip = False
+            continue
+
+        if opt == '-':
+            # Add next element if -
+            try:
+                opt = opt + options[i+1]
+                skip = True
+
+            except IndexError:
+                sys.stderr.write("Error: invalid options\n")
+                exit(1)
+
+        clean_options.append(opt)
+
+    return clean_options
