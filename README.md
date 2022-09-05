@@ -46,7 +46,7 @@ There are seven available commands. To list the available commands use one of th
 * connect, connects to a remote server.
 	* usage: server connect [-h] [-p PORT] [-o [OPTIONS [OPTIONS ...]]] [-P PATH] server
 * command, sends a command to a remote server.
-	* usage: server command [-h] [-p PORT] [-o [OPTIONS [OPTIONS ...]]] [-O [O [O ...]]] [-P PATH] server command
+	* usage: server command [-h] [-p PORT] [-o [OPTIONS [OPTIONS ...]]] [-O [O [O ...]]] [-P PATH] server command [command ...]
 * upload, uploads files or directories to a remote server
 	* usage: server upload [-h] [-t TARGET] [-r] [-p PORT] [-o [OPTIONS [OPTIONS ...]]] [-P PATH] server source
 * download, downloads files or directories from a remote server
