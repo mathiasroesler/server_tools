@@ -597,7 +597,7 @@ def setup_server(file_path, server_id, port, options):
             server_object.set_port(port)
 
         if options != '':
-            server_object.set_options('-'+options)
+            server_object.set_options(' '.join(options))
 
         server_object.exec_command()
 
