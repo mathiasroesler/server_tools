@@ -241,20 +241,22 @@ class Server:
         ssh_obj -- paramiko.client.SSHClient, ssh connection object.
 
         Return:
-
+		
         """
         ssh_obj.load_system_host_keys()
         password_prompt = "{}'s password: ".format(
                 self.server_name)
 
-        try:
-            password = getpass.getpass(password_prompt)
+        password = getpass.getpass(password_prompt)
 
+        try:
             ssh_obj.connect(self.get_host(), 
                     port=int(self.get_port()), 
                     username=self.get_user(), 
                     password=password,
-                    allow_agent=False)
+                    allow_agent=True)
+
+            return None
 
         except KeyboardInterrupt:
             sys.stderr.write("\nConnection to {} canceled.\n".format(
@@ -262,9 +264,28 @@ class Server:
             exit(1)
 
         except ssh_obj_exception.AuthenticationException:
-            sys.stderr.write("Authentification to {} failed.\n".format(
+            sys.stderr.write("Agent authentication to {} failed.\n".format(
+                self.server_name))
+            sys.stderr.write("Trying password authentication...\n")
+
+        try:
+            ssh_obj.connect(self.get_host(), 
+                    port=int(self.get_port()), 
+                    username=self.get_user(), 
+                    password=password,
+                    allow_agent=False)
+
+            return None
+
+        except KeyboardInterrupt:
+            sys.stderr.write("\nConnection to {} canceled.\n".format(
                 self.server_name))
             exit(1)
+
+        except ssh_obj_exception.AuthenticationException:
+            sys.stderr.write("Password authentication to {} failed.\n".format(
+                self.server_name))
+            exit(2)
 
 
     def upload(self, src_path, dest_path='.', recursive=False, quiet=False):
@@ -682,7 +703,7 @@ def upload_server(file_path, server_id, port, options, src_path, dest_path,
 
 def download_server(file_path, server_id, port, options, src_path, dest_path, 
         recursive, quiet):
-    """ Uploads files to the selected server.
+    """ Downloads files from the selected server.
 
     Arguments:
     file_path -- str, path to file containing the servers.
